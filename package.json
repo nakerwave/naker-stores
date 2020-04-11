@@ -1,0 +1,35 @@
+{
+    "name": "store-game",
+    "description": "store fight",
+    "license": "UNLICENSED",
+    "scripts": {
+        "clean": "rm -rf dist",
+        "dev": "set NODE_ENV=development",
+        "start": "npm run clean && npm run dev && parcel index.html",
+        "build": "npm run clean && parcel build index.html --public-url ./",
+        "build-engine": "parcel build engine/index.ts --global StarEngine -o engine.js",
+        "build-worker": "parcel build engine/worker.ts -o worker.js",
+        "build-viewer": "parcel build engine/viewer.ts --global star -o viewer.js",
+        "testcircular": "madge engine --extensions ts --circular"
+    },
+    "alias": {
+        "@babylonjs/core": "@naker/services/node_modules/@babylonjs/core",
+        "redom": "@naker/services/node_modules/redom",
+        "lodash": "@naker/services/node_modules/lodash"
+    },
+    "dependencies": {
+        "@babylonjs/gui": "^4.1.0",
+        "@babylonjs/loaders": "^4.1.0",
+        "@babylonjs/materials": "^4.1.0",
+        "@naker/services": "file:../naker-services",
+        "axios": "^0.19.2",
+        "hotkeys-js": "^3.3.8",
+        "mapbox-gl": "^1.9.1",
+        "suggestions": "^1.7.0"
+    },
+    "devDependencies": {
+        "node-sass": "^4.11.0",
+        "parcel-bundler": "^1.12.4",
+        "typescript": "^2.9.2"
+    }
+}

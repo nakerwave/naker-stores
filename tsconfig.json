@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {    
+        "moduleResolution": "node",
+        "baseUrl": ".",
+        "paths": {
+            "@babylonjs/core/*": [
+                "../naker-services/node_modules/@babylonjs/core/*"
+            ],
+            "redom/*": [
+                "../naker-services/node_modules/redom/*"
+            ],
+            "lodash/*": [
+                "../naker-services/node_modules/lodash/*"
+            ],
+            "nouislider/*": [
+                "../naker-design/node_modules/nouislider/*"
+            ],
+            "suggestions/*": [
+                "../naker-design/node_modules/suggestions/*"
+            ],
+            "axios/*": [
+                "../naker-design/node_modules/axios/*"
+            ],
+            "js-cookie/*": [
+                "../naker-design/node_modules/js-cookie/*"
+            ]
+        }
+    }
+}

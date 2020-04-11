@@ -1,0 +1,202 @@
+
+@import '_colors'
+@import '_variables'
+
+/***************************************** INPUT ****************************************/
+input:focus, select:focus
+    outline: 0px
+\::placeholder
+    color: $colortext
+    opacity: 1
+\::-webkit-input-placeholder
+    color: $colortext
+\::-moz-placeholder
+    color: $colortext
+\:-ms-input-placeholder
+    color: $colortext
+\:-moz-placeholder
+    color: $colortext
+
+.title
+    color: $colorsecondtext
+    background: $colormain
+    position: relative
+    padding: 10px
+
+.title-text::first-letter
+    text-transform: uppercase
+
+label
+    color: $colorsecondtext
+    font-size: $fontsizeinput
+    z-index: 0
+    text-transform: capitalize
+    position: relative
+
+.input-container
+    display: inline-block
+    position: relative
+    width: 100%
+    left: 0px
+    min-height: $heightinput
+    height: auto
+    margin: 5px 0px
+
+.input-container-big
+    min-height: 50px
+
+.container-height-auto
+    height: auto
+
+.input-parameter
+    position: absolute
+    height: $heightinput
+    right: $rightinput
+    width: $widthinputcontainer
+
+.input-parameter-first
+    position: absolute
+    height: $heightinput
+    right: $rightinput
+
+.input-parameter-second
+    position: absolute
+    height: $heightinput
+    right: $rightinput + 88px
+
+.input-paragraph
+    position: relative
+    top: 0px
+    height: 250px
+    right: - $rightinput 
+    font-size: $fontsizeinput
+    line-height: 20px
+    padding: 5px
+    color: $colortext
+    background: $colorinputbackground
+    border: 0px
+    border-radius: $borderradius
+
+.input-large-width
+    width: $largewidthinput !important
+
+.input-count
+    position: absolute
+    bottom: 5px
+    right: $rightinput
+    z-index: 10
+
+.input-label
+    position: absolute
+    left: 10px
+    top: 4px
+    height: $heightinput - 5px
+    line-height: $heightinput - 5px
+    color: $colortext
+    font-size: $fontsizeinput
+    width: 230px
+    &::first-letter
+        text-transform: uppercase
+
+.input-label-icon
+    left: 13px
+
+.input-label-paragraph
+    position: relative !important
+
+/***************************************** TEXT/NUMBER ****************************************/
+    
+input
+    &[type="text"], &[type="number"]
+        color: $colortext
+        background: $colorinputbackground
+        border: 2px solid $colorinputbackground
+        border-radius: $borderradius
+        height: $heightinput
+        width: $widthinput
+        font-size: $fontsizeinput
+        padding-left: 5px
+        padding-right: 0px
+        z-index: 2
+        position: absolute
+        top: 0px
+        box-shadow: none
+        // transition: all 200ms ease
+        &:focus
+            border: 2px solid $colormain
+
+input
+    &[changed="true"]
+        border: 2px solid $colormain
+
+.input-text
+    right: $rightinput
+    width: $widthinputcontainer
+textarea
+    resize: none
+    outline: none
+input
+    &[type="number"]
+        -moz-appearance: textfield
+        &:hover, &:focus
+            -moz-appearance: number-input
+        &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+            -webkit-appearance: none
+            width: 5px
+            margin: 0
+        &:focus
+            &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+                -webkit-appearance: inner-spin-button
+
+.input-unit
+    position: absolute
+    height: $heightinput
+    line-height: $heightinput
+    right: $rightinput + 3px
+    font-size: $fontsizeinput
+    border-radius: $borderradius
+    z-index: 50
+    background: $colorinputbackground
+    text-align: center
+    color: $colorlightgrey
+
+
+/***************************************** VECTOR ****************************************/
+    
+.vector-container
+    position: absolute
+    width: 210px
+    height: $heightinput
+    right: $rightinput
+    top: 1px
+
+.vector-input
+    float: left
+    margin-left: 10px
+    position: relative !important
+
+.vector-title
+    height: 20px
+    margin-top: 8px
+    padding-left: 33px
+    letter-spacing: 29px
+    font-size: $fontsizeinput
+    .vector-axe
+        display: inline-block
+        position: relative
+        margin-left: 29px
+        line-height: 22px
+        .arrow
+            position: absolute
+            font-size: 12px
+            width: 10px
+            left: 17px
+            top: 5px
+        .x-axe
+            transform: rotate(-180deg)
+        .y-axe
+            transform: rotate(90deg)
+            top: 3px
+        .z-axe
+            transform: rotate(-45deg)
+            left: 14px
