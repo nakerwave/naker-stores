@@ -14,6 +14,9 @@ export interface PositionEntityInterface {
     size?: number,
 }
 
+export let houseDoorWayVector = new Vector2(4, 0);
+export let storeDoorWayVector = new Vector2(0, -4);
+
 export class StorePath {
 
     key: string;
@@ -28,7 +31,7 @@ export class StorePath {
         this.curve = new CubicEase();
         this.curve.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
 
-        let path = [Vector3.Zero(), Vector3.Zero()]
+        let path = [Vector3.Zero(), new Vector3(0, 1, 0)];
         this.tube = Mesh.CreateTube("tube", path, 0.5, 12, null, null, this.system.scene, true);
         this.tube.alwaysSelectAsActiveMesh = true;
         this.tube.doNotSyncBoundingInfo = true;
@@ -39,32 +42,37 @@ export class StorePath {
     }
 
     destination: Vector2;
+    animLength = 50;
     setDestination(destination: Vector2) {
-        this.animation.simple(20, (count, perc) => {
+        let doorWayDestination = destination.add(storeDoorWayVector);
+        let change = doorWayDestination.subtract(houseDoorWayVector);
+        this.animation.simple(this.animLength, (count, perc) => {
             let easePerc = this.curve.ease(perc);
-            let progress = destination.multiply(new Vector2(easePerc, easePerc));
-            this.updatePath(progress);
+            let progress: Vector2;
+            if (easePerc < 0.5) progress = change.multiply(new Vector2(0, easePerc * 2));
+            else progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
+            let pos = houseDoorWayVector.add(progress);
+            this.destination = pos;
+            this.setPosition(pos);
         });
     }
 
     hide() {
-        this.animation.simple(20, (count, perc) => {
+        let change = this.destination.subtract(houseDoorWayVector);
+        this.animation.simple(this.animLength, (count, perc) => {
             let easePerc = 1 - this.curve.ease(perc);
-            let progress = this.destination.multiply(new Vector2(easePerc, easePerc));
-            this.updatePath(progress);
+            let progress: Vector2;
+            if (easePerc < 0.5) progress = change.multiply(new Vector2(0, easePerc * 2));
+            else progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
+            let pos = houseDoorWayVector.add(progress);
+            this.setPosition(pos);
         }, () => {
-            this.updatePath(Vector2.Zero());
+            this.setPosition(houseDoorWayVector);
         });
     }
 
-    updatePath(destination: Vector2) {
-        this.destination = destination;
-        let newPath = [
-            Vector3.Zero(),
-            new Vector3(destination.x, 0, destination.y)
-        ]
-        this.tube = Mesh.CreateTube("tube", newPath, 0.5, null, null, null, null, null, null, this.tube);
-        this.tube.alwaysSelectAsActiveMesh = true;
-        this.tube.doNotSyncBoundingInfo = true;
+    setPosition(destination: Vector2) {
+        this.tube.position.x = destination.x;
+        this.tube.position.z = destination.y;
     }
 }

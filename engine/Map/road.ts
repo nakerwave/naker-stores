@@ -188,7 +188,5 @@ export class Road {
         customMesh.material.albedoTexture = new Texture(roadTexture, scene);
         customMesh.material.albedoColor = new Color3(1, 1, 0);
         customMesh.material.emissiveColor = new Color3(0.1, 0.1, 0.1);
-        console.log(customMesh.material);
-        
     }
 }

@@ -102,7 +102,7 @@ export class Store extends MeshEntity {
         this.label.setTextStyle({ textVerticalAlignment: Control.VERTICAL_ALIGNMENT_TOP });
         this.label.setStyle({ cornerRadius: 5 });
         // this.label.setStyle({ cornerRadius: 5, paddingLeft: 5, paddingRight: 5 });
-        this.label.container.linkOffsetY = -20;
+        this.label.container.linkOffsetY = 60;
         this.label.container.linkWithMesh(this.mesh);
     }
 
@@ -113,7 +113,6 @@ export class Store extends MeshEntity {
         this.latlng = latlng;
         let storeType = find(storeList, (s) => { return s.name == type });
         this.mesh.material.albedoColor = storeType.color;
-        this.label.container.linkOffsetY = 40;
         this.label.setStyle({background: storeType.color.toHexString()});
     }
 

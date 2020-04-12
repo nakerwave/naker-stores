@@ -8,7 +8,7 @@ import { Vector2 } from '@babylonjs/core/Maths/math';
 import stores from '../../asset/stores.json';
 import { Ground } from './Ground';
 import { ModalUI } from 'engine/Ui/modal';
-import { StorePath } from './storePath';
+import { StorePath, houseDoorWayVector, storeDoorWayVector } from './storePath';
 import { Road } from './road';
 
 /**
@@ -151,16 +151,15 @@ export class StoreMap {
         }
     }
 
-    doorWayVector = new Vector2(4, 4);
     // addStoresRoads(stores: Array<any>) {
-    //     let SouthWestPath: Array<Vector2> = [ this.doorWayVector ];
-    //     let SouthEstPath: Array<Vector2> = [ this.doorWayVector ];
-    //     let NorthWestPath: Array<Vector2> = [ this.doorWayVector ];
-    //     let NorthEstPath: Array<Vector2> = [ this.doorWayVector ];
+    //     let SouthWestPath: Array<Vector2> = [ houseDoorWayVector ];
+    //     let SouthEstPath: Array<Vector2> = [ houseDoorWayVector ];
+    //     let NorthWestPath: Array<Vector2> = [ houseDoorWayVector ];
+    //     let NorthEstPath: Array<Vector2> = [ houseDoorWayVector ];
     //     for (let i = 0; i < stores.length; i++) {
     //         let store = stores[i];
     //         let pos = store.position;
-    //         let doorWayPos = pos.subtract(this.doorWayVector);
+    //         let doorWayPos = pos.subtract(houseDoorWayVector);
     //         if (pos.x <= 0 && pos.y < 0) SouthWestPath.push(doorWayPos);
     //         if (pos.x > 0 && pos.y <= 0) SouthEstPath.push(doorWayPos);
     //         if (pos.x <= 0 && pos.y > 0) NorthWestPath.push(doorWayPos);
@@ -176,23 +175,24 @@ export class StoreMap {
 
     // }
 
+    roadStopScale = new Vector2(1.1, 1);
     addStoresRoads(stores: Array<any>) {
         for (let i = 0; i < stores.length; i++) {
             let store = stores[i];
             let pos = store.position;
-            // let doorWayPos = pos.subtract(this.doorWayVector);
+            // let doorWayPos = pos.subtract(houseDoorWayVector);
             let storePath: Array<Vector2>;
             // if (doorWayPos.y < 0) {
             //     storePath = [
-            //         this.doorWayVector, 
+            //         houseDoorWayVector, 
             //         new Vector2(0, doorWayPos.y),
             //         doorWayPos,
             //     ];
             // } else {
                 storePath = [
-                    this.doorWayVector,
-                    new Vector2(this.doorWayVector.x, pos.y + this.doorWayVector.y),
-                    new Vector2(pos.x, pos.y + this.doorWayVector.y),
+                    houseDoorWayVector,
+                    new Vector2(houseDoorWayVector.x, pos.y + storeDoorWayVector.y),
+                    new Vector2(pos.x, pos.y + storeDoorWayVector.y).multiply(this.roadStopScale),
                 ];
             // }
             new Road(storePath, this.system.scene);

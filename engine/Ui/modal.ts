@@ -53,8 +53,6 @@ export class ModalUI {
     start: Array<number>
     setStart(latlng: Array<number>) {
         this.start = latlng;
-        console.log(latlng);
-        
         this.map.setCenter(latlng);
     }
 

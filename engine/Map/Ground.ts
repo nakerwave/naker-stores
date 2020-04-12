@@ -46,6 +46,7 @@ export class Ground {
 
         this.addGround();
         this.setEvents(mouseCatcher, responsiveCatcher);
+        this.setCameraRotation(Vector2.Zero());
     }
 
     ground: Mesh;
