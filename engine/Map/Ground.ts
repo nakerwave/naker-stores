@@ -1,5 +1,6 @@
 import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
 import { Animation } from '@naker/services/System/systemAnimation';
+import { ResponsiveCatcher } from '@naker/services/Catchers/responsiveCatcher';
 
 import { MeshSystem } from '../System/meshSystem';
 import { Tree } from '../Entity/tree';
@@ -9,7 +10,10 @@ import { Vector2, Vector3, Color3 } from '@babylonjs/core/Maths/math';
 import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
 import { Scene } from '@babylonjs/core/scene'
 import { EasingFunction, CubicEase, } from '@babylonjs/core/Animations/easing';
-import { ResponsiveCatcher } from '@naker/services/Catchers/responsiveCatcher';
+import { Texture } from '@babylonjs/core/Materials/Textures/texture';
+
+import grassAlbedoTexture from '../../asset/grass1.png';
+import grassNormalTexture from '../../asset/grassnorm1.png';
 
 /**
  * Manage all the essential assets needed to build a 3D scene (Engine, Scene Cameras, etc)
@@ -58,8 +62,8 @@ export class Ground {
         // this.gridground.renderingGroupId = 3;
         // this.ground.isVisible = false;
         this.ground.rotation.x = Math.PI/2;
-
-        this.ground.material = this.system.groundMaterial;
+        this.addGroundMaterial();
+        this.ground.material = this.groundMaterial;
     }
 
     currentTarget = Vector2.Zero();
@@ -148,4 +152,14 @@ export class Ground {
         this.system.camera.beta = -0.1 * rot.x * this.realSensitivity + Math.PI / 4;
     }
 
+    groundMaterial: PBRMaterial;
+    addGroundMaterial() {
+        this.groundMaterial = new PBRMaterial("groundMaterial", this.system.scene);
+        this.groundMaterial.roughness = 1;
+        this.groundMaterial.metallic = 0.2;
+        this.groundMaterial.alpha = 1;
+        this.groundMaterial.albedoColor = new Color3(1 / 255, 255 / 255, 56 / 255);
+        // this.groundMaterial.albedoTexture = new Texture(grassAlbedoTexture, this.system.scene);
+        // this.groundMaterial.bumpTexture = new Texture(grassNormalTexture, this.system.scene);
+    }
 }

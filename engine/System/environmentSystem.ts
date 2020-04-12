@@ -59,7 +59,7 @@ export class EnvironmentSystem extends System {
         // Glow layer takes too much performance
         // this.addGlow();
         // this.addSky();
-        this.addGroundMaterial();
+        // this.addGroundMaterial();
         // this.sparkleTexture = new Texture(sparkleTexture, this.scene);
         // this.smokeTexture = new Texture(smokeTexture, this.scene);
         // this.circleTexture = new Texture(circleTexture, this.scene);
@@ -104,7 +104,7 @@ export class EnvironmentSystem extends System {
             // this.skyboxMaterial.reflectionTexture = this.sceneTexture.clone();
             // this.skyboxMaterial.reflectionTexture.level = 0.1;
             // this.skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
-            this.groundMaterial.reflectionTexture = this.sceneTexture.clone();
+            // this.groundMaterial.reflectionTexture = this.sceneTexture.clone();
             this.sendToSkyChangeListeners();
             if (callback) callback();
         });
@@ -123,14 +123,5 @@ export class EnvironmentSystem extends System {
         for (let i = 0; i < this.listeners.length; i++) {
             this.listeners[i](this.sceneTexture);
         }
-    }
-
-    groundMaterial: PBRMaterial;
-    addGroundMaterial() {
-        this.groundMaterial = new PBRMaterial("groundMaterial", this.scene);
-        this.groundMaterial.roughness = 1;
-        this.groundMaterial.metallic = 0.2;
-        this.groundMaterial.alpha = 1;
-        this.groundMaterial.albedoColor = new Color3(1 / 255, 255 / 255, 56 / 255);
     }
 }

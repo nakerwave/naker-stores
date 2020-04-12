@@ -17,6 +17,14 @@ import { Road } from './road';
  * The system is really important as it is often sent in every other class created to manage core assets
  */
 
+ interface StoreData {
+    name: string;
+    position: any;
+    cat: string;
+    lon: number;
+    lat: number;
+ }
+
 export class StoreMap {
 
     system: UiSystem;
@@ -63,7 +71,7 @@ export class StoreMap {
 
     gridSpot: Array<Array<any>>;
     spotWidthNumber = 20;
-    setStorePositionInGrid(storesNearby: Array<any>): Array<any> {
+    setStorePositionInGrid(storesNearby: Array<StoreData>): Array<StoreData> {
         this.gridSpot = Array(this.spotWidthNumber).fill().map(() => Array(this.spotWidthNumber).fill());
         
         for (let i = 0; i < storesNearby.length; i++) {
@@ -95,7 +103,7 @@ export class StoreMap {
 
     maxStores = 20;
     searchDistance = 0.3;
-    getStoresInBox(latlng: Array<number>): Array<any> {
+    getStoresInBox(latlng: Array<number>): Array<StoreData> {
         let storesInBox = [];
         for (let i = 0; i < stores.length; i++) {
             const store = stores[i];
@@ -125,7 +133,7 @@ export class StoreMap {
     }
 
     storeModels: Array<Store> = [];
-    addStoresModels(stores: Array<any>) {
+    addStoresModels(stores: Array<StoreData>) {
         this.house.setPosition(this.center);
         this.house.showAnim();
         let j = 0;
@@ -143,28 +151,55 @@ export class StoreMap {
         }
     }
 
+    doorWayVector = new Vector2(4, 4);
+    // addStoresRoads(stores: Array<any>) {
+    //     let SouthWestPath: Array<Vector2> = [ this.doorWayVector ];
+    //     let SouthEstPath: Array<Vector2> = [ this.doorWayVector ];
+    //     let NorthWestPath: Array<Vector2> = [ this.doorWayVector ];
+    //     let NorthEstPath: Array<Vector2> = [ this.doorWayVector ];
+    //     for (let i = 0; i < stores.length; i++) {
+    //         let store = stores[i];
+    //         let pos = store.position;
+    //         let doorWayPos = pos.subtract(this.doorWayVector);
+    //         if (pos.x <= 0 && pos.y < 0) SouthWestPath.push(doorWayPos);
+    //         if (pos.x > 0 && pos.y <= 0) SouthEstPath.push(doorWayPos);
+    //         if (pos.x <= 0 && pos.y > 0) NorthWestPath.push(doorWayPos);
+    //         if (pos.x > 0 && pos.y >= 0) NorthEstPath.push(doorWayPos);
+    //     }
+
+    //     console.log(SouthWestPath, SouthEstPath, NorthWestPath, NorthEstPath);
+        
+    //     if (SouthWestPath.length > 1) new Road({ path: SouthWestPath, width: 1, closed: false, standardUV: false }, this.system.scene);
+    //     if (SouthEstPath.length > 1) new Road({ path: SouthEstPath, width: 1, closed: false, standardUV: false }, this.system.scene);
+    //     if (NorthWestPath.length > 1) new Road({ path: NorthWestPath, width: 1, closed: false, standardUV: false }, this.system.scene);
+    //     if (NorthEstPath.length > 1) new Road({ path: NorthEstPath, width: 1, closed: false, standardUV: false }, this.system.scene);
+
+    // }
+
     addStoresRoads(stores: Array<any>) {
-        let SouthWestPath: Array<Vector2> = [ Vector2.Zero() ];
-        let SouthEstPath: Array<Vector2> = [ Vector2.Zero() ];
-        let NorthWestPath: Array<Vector2> = [ Vector2.Zero() ];
-        let NorthEstPath: Array<Vector2> = [ Vector2.Zero() ];
-        let doorWayVector = new Vector2(0, 3);
         for (let i = 0; i < stores.length; i++) {
             let store = stores[i];
             let pos = store.position;
-            let doorPos = pos.subtract(doorWayVector);
-            if (pos.x <= 0 && pos.y < 0) SouthWestPath.push(doorPos);
-            if (pos.x > 0 && pos.y <= 0) SouthEstPath.push(doorPos);
-            if (pos.x <= 0 && pos.y > 0) NorthWestPath.push(doorPos);
-            if (pos.x > 0 && pos.y >= 0) NorthEstPath.push(doorPos);
+            // let doorWayPos = pos.subtract(this.doorWayVector);
+            let storePath: Array<Vector2>;
+            // if (doorWayPos.y < 0) {
+            //     storePath = [
+            //         this.doorWayVector, 
+            //         new Vector2(0, doorWayPos.y),
+            //         doorWayPos,
+            //     ];
+            // } else {
+                storePath = [
+                    this.doorWayVector,
+                    new Vector2(this.doorWayVector.x, pos.y + this.doorWayVector.y),
+                    new Vector2(pos.x, pos.y + this.doorWayVector.y),
+                ];
+            // }
+            new Road(storePath, this.system.scene);
         }
+    }
 
-        console.log(SouthWestPath, SouthEstPath, NorthWestPath, NorthEstPath);
-        
-        if (SouthWestPath.length > 1) new Road({ path: SouthWestPath, width: 1, closed: false, standardUV: false }, this.system.scene);
-        if (SouthEstPath.length > 1) new Road({ path: SouthEstPath, width: 1, closed: false, standardUV: false }, this.system.scene);
-        if (NorthWestPath.length > 1) new Road({ path: NorthWestPath, width: 1, closed: false, standardUV: false }, this.system.scene);
-        if (NorthEstPath.length > 1) new Road({ path: NorthEstPath, width: 1, closed: false, standardUV: false }, this.system.scene);
+    getStorPath(stores: StoreData) {
 
     }
 }

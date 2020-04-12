@@ -4,7 +4,8 @@ import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 import { Scene } from '@babylonjs/core/scene'
 import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
-import roadTexture from '../../asset/road2.jpg';
+
+import roadTexture from '../../asset/road8.jpg';
 
 // var road = new Road({ path: path, width: 1, closed: true, standardUV: false }, scene);
 
@@ -17,23 +18,20 @@ interface RoadOptions {
 
 export class Road {
 
-    constructor(options: RoadOptions, scene: Scene) {
+    constructor(points: Array<Vector2>, scene: Scene) {
 
         //Arrays for vertex positions and indices
         var positions = [];
         var indices = [];
         var normals = [];
 
-        var width = options.width || 1;
+        var width = 1;
         let path: Array<Vector3> = [];
-        for (let i = 0; i < options.path.length; i++) {
-            path[i] = new Vector3(options.path[i].x, 0.2, options.path[i].y);
+        for (let i = 0; i < points.length; i++) {
+            path[i] = new Vector3(points[i].x, 0.2, points[i].y);
         }
-        var closed = options.closed || false;
-        let standardUV = true;
-        if (options.standardUV !== undefined) {
-            standardUV = options.standardUV;
-        }
+        var closed = false;
+        let standardUV = false;
 
         var interiorIndex;
 
@@ -50,46 +48,31 @@ export class Road {
         var nextLine = Vector3.Zero();
         path[1].subtractToRef(path[0], line);
 
-        if (nbPoints > 2 && closed) {
-            path[2].subtractToRef(path[1], nextLine);
-            for (var p = 0; p < nbPoints; p++) {
-                angle = Math.PI - Math.acos(Vector3.Dot(line, nextLine) / (line.length() * nextLine.length()));
-                let direction = Vector3.Cross(line, nextLine).normalize().y;
-                let lineNormal = new Vector3(-line.z, 0, 1 * line.x).normalize();
-                line.normalize();
-                innerData[(p + 1) % nbPoints] = path[(p + 1) % nbPoints];
-                outerData[(p + 1) % nbPoints] = path[(p + 1) % nbPoints].add(lineNormal.scale(width)).add(line.scale(direction * width / Math.tan(angle / 2)));
-                line = nextLine.clone();
-                path[(p + 3) % nbPoints].subtractToRef(path[(p + 2) % nbPoints], nextLine);
-            }
-        }
-        else {
+        let lineNormal = new Vector3(-line.z, 0, 1 * line.x).normalize();
+        line.normalize();
+        innerData[0] = path[0].add(lineNormal.scale(-width));
+        outerData[0] = path[0].add(lineNormal.scale(width));
+
+        for (var p = 0; p < nbPoints - 2; p++) {
+            path[p + 2].subtractToRef(path[p + 1], nextLine);
+            angle = Math.PI - Math.acos(Vector3.Dot(line, nextLine) / (line.length() * nextLine.length()));
+            let direction = Vector3.Cross(line, nextLine).normalize().y;
             let lineNormal = new Vector3(-line.z, 0, 1 * line.x).normalize();
             line.normalize();
-            innerData[0] = path[0];
-            outerData[0] = path[0].add(lineNormal.scale(width));
-
-            for (var p = 0; p < nbPoints - 2; p++) {
-                path[p + 2].subtractToRef(path[p + 1], nextLine);
-                angle = Math.PI - Math.acos(Vector3.Dot(line, nextLine) / (line.length() * nextLine.length()));
-                let direction = Vector3.Cross(line, nextLine).normalize().y;
-                let lineNormal = new Vector3(-line.z, 0, 1 * line.x).normalize();
-                line.normalize();
-                innerData[p + 1] = path[p + 1];
-                outerData[p + 1] = path[p + 1].add(lineNormal.scale(width)).add(line.scale(direction * width / Math.tan(angle / 2)));
-                line = nextLine.clone();
-            }
-            if (nbPoints > 2) {
-                path[nbPoints - 1].subtractToRef(path[nbPoints - 2], line);
-                lineNormal = new Vector3(-line.z, 0, 1 * line.x).normalize();
-                line.normalize();
-                innerData[nbPoints - 1] = path[nbPoints - 1];
-                outerData[nbPoints - 1] = path[nbPoints - 1].add(lineNormal.scale(width));
-            }
-            else {
-                innerData[1] = path[1]
-                outerData[1] = path[1].add(lineNormal.scale(width));
-            }
+            innerData[p + 1] = path[p + 1].add(lineNormal.scale(-width)).add(line.scale(direction * -width / Math.tan(angle / 2)));;
+            outerData[p + 1] = path[p + 1].add(lineNormal.scale(width)).add(line.scale(direction * width / Math.tan(angle / 2)));
+            line = nextLine.clone();
+        }
+        if (nbPoints > 2) {
+            path[nbPoints - 1].subtractToRef(path[nbPoints - 2], line);
+            lineNormal = new Vector3(-line.z, 0, 1 * line.x).normalize();
+            line.normalize();
+            innerData[nbPoints - 1] = path[nbPoints - 1].add(lineNormal.scale(-width));;
+            outerData[nbPoints - 1] = path[nbPoints - 1].add(lineNormal.scale(width));
+        }
+        else {
+            innerData[1] = path[1].add(lineNormal.scale(-width));
+            outerData[1] = path[1].add(lineNormal.scale(width));
         }
 
         var maxX = Number.MIN_VALUE;
@@ -161,7 +144,7 @@ export class Road {
 
             for (var i = 6; i < indices.length; i += 6) {
 
-                flip = (flip + 1) % 2;
+                flip = 1;
                 v0 = innerData[0];
                 v1 = innerData[1].subtract(v0);
                 v2 = outerData[0].subtract(v0);
@@ -175,9 +158,9 @@ export class Road {
                 var minX = Math.min(0, p1, p2, p3);
                 var maxX = Math.max(0, p1, p2, p3);
 
-                uvs[2 * indices[i + 1]] = flip + Math.cos(flip * Math.PI) * (p1 - minX) / (maxX - minX);
+                uvs[2 * indices[i + 1]] = Math.cos(flip * Math.PI) * (p1 - minX) / (maxX - minX);
                 uvs[2 * indices[i + 1] + 1] = 1;
-                uvs[2 * indices[i + 4]] = flip + Math.cos(flip * Math.PI) * (p3 - minX) / (maxX - minX);
+                uvs[2 * indices[i + 4]] = Math.cos(flip * Math.PI) * (p3 - minX) / (maxX - minX);
                 uvs[2 * indices[i + 4] + 1] = 0;
             }
         }
@@ -202,7 +185,10 @@ export class Road {
         customMesh.material = new PBRMaterial("roadMaterial", scene);
         customMesh.material.roughness = 1;
         customMesh.material.metallic = 0;
-        // customMesh.material.albedoColor = new Color3(0, 1, 0);
         customMesh.material.albedoTexture = new Texture(roadTexture, scene);
+        customMesh.material.albedoColor = new Color3(1, 1, 0);
+        customMesh.material.emissiveColor = new Color3(0.1, 0.1, 0.1);
+        console.log(customMesh.material);
+        
     }
 }
