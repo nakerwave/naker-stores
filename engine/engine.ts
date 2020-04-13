@@ -9,15 +9,9 @@ import { StoreMap } from './Map/storeMap';
 import { ModalUI } from './Ui/modal';
 import { setStyle } from 'redom';
 
-// Improve dive function to reproduce planet attraction effect
-// Trou noir attaque uniquement les leaders
-// Faire étoile filante plutôt que point blanc
-// Tableau de récap à la fin
-// Create particle in show/hide to avoid creating 100 particleSystem
-// Add menu with Sound, twitter and discoord
-// Explosion create a wave on the grid Or simple rotate/shake a bit the grid
-// Use Saved Star and avoid checkactivemeshes
-
+// Faire des noeud de commerces
+// Nord-Sud pas bon avec l'itinéraire
+// Permetre la navigation dans la map
 
 export interface GameInterface {
     canvas?: HTMLCanvasElement,
@@ -53,11 +47,11 @@ export class GameEngine {
         this.ground = new Ground(this.system, this.mouseCatcher, this.responsiveCatcher);
         this.storeMap = new StoreMap(this.system, this.ground, this.modal);
 
-        setTimeout(() => {
-            this.storeMap.updateStores([-1.414176, 48.680365]);
-            this.modal.setStart([-1.414176, 48.680365]);
-            setStyle(this.searchInput.form, { top: '-30px' });
-        }, 5000);
+        // setTimeout(() => {
+        //     this.storeMap.updateStores([-1.414176, 48.680365]);
+        //     this.modal.setStart([-1.414176, 48.680365]);
+        //     setStyle(this.searchInput.form, { top: '-30px' });
+        // }, 5000);
         
         this.system.scene.freezeActiveMeshes();
         // this.system.camera.attachControl(gameOptions.canvas);

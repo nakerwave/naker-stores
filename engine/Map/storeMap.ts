@@ -1,29 +1,21 @@
 import { UiSystem } from '../System/uiSystem';
-import { Store } from '../Entity/store';
+import { Store, StoreData } from '../Entity/store';
 import { House } from '../Entity/house';
+import { StorePath, houseDoorWayVector, storeDoorWayVector } from './storePath';
+import { Road } from './road';
+import { Ground } from './Ground';
+import { ModalUI } from '../Ui/modal';
 
 import { EasingFunction } from '@babylonjs/core/Animations/easing';
 import { Vector2 } from '@babylonjs/core/Maths/math';
 
 import stores from '../../asset/stores.json';
-import { Ground } from './Ground';
-import { ModalUI } from 'engine/Ui/modal';
-import { StorePath, houseDoorWayVector, storeDoorWayVector } from './storePath';
-import { Road } from './road';
 
 /**
  * Manage all the essential assets needed to build a 3D scene (Engine, Scene Cameras, etc)
  *
  * The system is really important as it is often sent in every other class created to manage core assets
  */
-
- interface StoreData {
-    name: string;
-    position: any;
-    cat: string;
-    lon: number;
-    lat: number;
- }
 
 export class StoreMap {
 
@@ -66,7 +58,7 @@ export class StoreMap {
         let storesNearby = this.getStoresInBox(latlng);
         this.storesNearby = this.setStorePositionInGrid(storesNearby);
         this.addStoresModels(this.storesNearby);
-        this.addStoresRoads(this.storesNearby);
+        // this.addStoresRoads(this.storesNearby);
     }
 
     gridSpot: Array<Array<any>>;
@@ -138,15 +130,14 @@ export class StoreMap {
         this.house.showAnim();
         let j = 0;
         for (let i = 0; i < stores.length; i++) {
+            let newStore = new Store(this.system, this.modal, this.storePath);
+            let store = stores[i];
+            newStore.setData(store);
+            this.storeModels.push(newStore);
             setTimeout(() => {
-                let store = stores[j];
-                let newStore = new Store(this.system, this.modal, this.storePath);
-                newStore.setPosition(store.position);
-                newStore.setStore(store.cat, store.name, [store.lon, store.lat]);
-                newStore.showAnim();
-                this.storeModels.push(newStore);
-                j++;
+                this.storeModels[j].showAnim();
                 this.system.checkActiveMeshes();
+                j++;
             }, i * 200);
         }
     }
@@ -165,41 +156,24 @@ export class StoreMap {
     //         if (pos.x <= 0 && pos.y > 0) NorthWestPath.push(doorWayPos);
     //         if (pos.x > 0 && pos.y >= 0) NorthEstPath.push(doorWayPos);
     //     }
-
-    //     console.log(SouthWestPath, SouthEstPath, NorthWestPath, NorthEstPath);
-        
     //     if (SouthWestPath.length > 1) new Road({ path: SouthWestPath, width: 1, closed: false, standardUV: false }, this.system.scene);
     //     if (SouthEstPath.length > 1) new Road({ path: SouthEstPath, width: 1, closed: false, standardUV: false }, this.system.scene);
     //     if (NorthWestPath.length > 1) new Road({ path: NorthWestPath, width: 1, closed: false, standardUV: false }, this.system.scene);
     //     if (NorthEstPath.length > 1) new Road({ path: NorthEstPath, width: 1, closed: false, standardUV: false }, this.system.scene);
-
     // }
 
-    roadStopScale = new Vector2(1.1, 1);
-    addStoresRoads(stores: Array<any>) {
-        for (let i = 0; i < stores.length; i++) {
-            let store = stores[i];
-            let pos = store.position;
-            // let doorWayPos = pos.subtract(houseDoorWayVector);
-            let storePath: Array<Vector2>;
-            // if (doorWayPos.y < 0) {
-            //     storePath = [
-            //         houseDoorWayVector, 
-            //         new Vector2(0, doorWayPos.y),
-            //         doorWayPos,
-            //     ];
-            // } else {
-                storePath = [
-                    houseDoorWayVector,
-                    new Vector2(houseDoorWayVector.x, pos.y + storeDoorWayVector.y),
-                    new Vector2(pos.x, pos.y + storeDoorWayVector.y).multiply(this.roadStopScale),
-                ];
-            // }
-            new Road(storePath, this.system.scene);
-        }
-    }
-
-    getStorPath(stores: StoreData) {
-
-    }
+    // roadStopScale = new Vector2(1.1, 1);
+    // addStoresRoads(stores: Array<any>) {
+    //     for (let i = 0; i < stores.length; i++) {
+    //         let store = stores[i];
+    //         let pos = store.position;
+    //         let storePath: Array<Vector2>;
+    //         storePath = [
+    //             houseDoorWayVector,
+    //             new Vector2(houseDoorWayVector.x, pos.y + storeDoorWayVector.y),
+    //             new Vector2(pos.x, pos.y + storeDoorWayVector.y).multiply(this.roadStopScale),
+    //         ];
+    //         new Road(storePath, this.system.scene);
+    //     }
+    // }
 }

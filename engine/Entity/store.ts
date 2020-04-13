@@ -2,7 +2,7 @@ import { UiSystem } from '../System/uiSystem';
 import { ModalUI } from '../Ui/modal';
 import { MeshEntity } from './meshEntity';
 
-import { Color3 } from '@babylonjs/core/Maths/math';
+import { Color3, Vector2 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
@@ -14,12 +14,21 @@ import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 
 import find from 'lodash/find';
 import { ui_text } from '../Ui/node';
-import { StorePath } from 'engine/Map/storePath';
+import { StorePath, houseDoorWayVector, storeDoorWayVector } from '../Map/storePath';
+import { Road } from '../Map/road';
 
 export interface StoreInterface {
     name: string;
     color: Color3;
 };
+
+export interface StoreData {
+    name: string;
+    position: any;
+    cat: string;
+    lon: number;
+    lat: number;
+}
 
 export let storeList: Array < StoreInterface > = [
     {
@@ -106,6 +115,23 @@ export class Store extends MeshEntity {
         this.label.container.linkWithMesh(this.mesh);
     }
 
+    setData(store: StoreData) {
+        this.setPosition(store.position);
+        this.setStore(store.cat, store.name, [store.lon, store.lat]);
+        this.addRoad(store.position);
+    }
+    
+    roadStopScale = new Vector2(1.1, 1);
+    road: Road;
+    addRoad(pos: Vector2) {
+        let storePath = [
+            houseDoorWayVector,
+            new Vector2(houseDoorWayVector.x, pos.y + storeDoorWayVector.y),
+            new Vector2(pos.x, pos.y + storeDoorWayVector.y).multiply(this.roadStopScale),
+        ];
+        this.road = new Road(storePath, this.system.scene);
+    }
+
     name: string;
     latlng: Array<number>
     setStore(type: string, name: string, latlng: Array<number>) {
@@ -115,18 +141,6 @@ export class Store extends MeshEntity {
         this.mesh.material.albedoColor = storeType.color;
         this.label.setStyle({background: storeType.color.toHexString()});
     }
-
-    // showAnim(callback?: Function) {
-    //     // this.mesh.isVisible = true;
-    //     this.scaleMesh(0);
-    //     this.animation.simple(this.showAnimLength, (count, perc) => {
-    //         let easePerc = this.showCurve.ease(perc);
-    //         this.scaleMesh(easePerc * this.size);
-    //     }, () => {
-    //         this.show();
-    //         if (callback) callback();
-    //     });
-    // }
 
     hideAnim(callback?: Function) {
         this.animation.simple(this.showAnimLength, (count, perc) => {
@@ -155,6 +169,7 @@ export class Store extends MeshEntity {
     }
 
     hide() {
+        if (this.road) this.road.dispose();
         this.hideLabel();
         this.scaleMesh(0);
     }

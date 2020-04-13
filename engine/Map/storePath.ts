@@ -39,6 +39,7 @@ export class StorePath {
         this.tube.material = new PBRMaterial("storeMaterial", this.system.scene);
         this.tube.material.roughness = 1;
         this.tube.material.albedoColor = new Color3(1, 1, 0);
+        this.tube.material.backFaceCulling = false;
     }
 
     destination: Vector2;
@@ -58,6 +59,7 @@ export class StorePath {
     }
 
     hide() {
+        if (!this.destination) return;
         let change = this.destination.subtract(houseDoorWayVector);
         this.animation.simple(this.animLength, (count, perc) => {
             let easePerc = 1 - this.curve.ease(perc);

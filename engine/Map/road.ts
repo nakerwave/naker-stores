@@ -18,6 +18,8 @@ interface RoadOptions {
 
 export class Road {
 
+    mesh: Mesh;
+
     constructor(points: Array<Vector2>, scene: Scene) {
 
         //Arrays for vertex positions and indices
@@ -168,7 +170,7 @@ export class Road {
         VertexData.ComputeNormals(positions, indices, normals);
         VertexData._ComputeSides(Mesh.DOUBLESIDE, positions, indices, normals, uvs);
         //Create a custom mesh  
-        var customMesh = new Mesh("custom", scene);
+        this.mesh = new Mesh("custom", scene);
 
         //Create a vertexData object
         var vertexData = new VertexData();
@@ -180,13 +182,18 @@ export class Road {
         vertexData.uvs = uvs;
 
         //Apply vertexData to custom mesh
-        vertexData.applyToMesh(customMesh);
+        vertexData.applyToMesh(this.mesh);
 
-        customMesh.material = new PBRMaterial("roadMaterial", scene);
-        customMesh.material.roughness = 1;
-        customMesh.material.metallic = 0;
-        customMesh.material.albedoTexture = new Texture(roadTexture, scene);
-        customMesh.material.albedoColor = new Color3(1, 1, 0);
-        customMesh.material.emissiveColor = new Color3(0.1, 0.1, 0.1);
+        this.mesh.material = new PBRMaterial("roadMaterial", scene);
+        this.mesh.material.roughness = 1;
+        this.mesh.material.metallic = 0;
+        this.mesh.material.albedoTexture = new Texture(roadTexture, scene);
+        this.mesh.material.albedoColor = new Color3(1, 1, 0);
+        this.mesh.material.emissiveColor = new Color3(0.1, 0.1, 0.1);
+    }
+
+    dispose() {
+        this.mesh.isVisible = false;
+        this.mesh.dispose();
     }
 }
