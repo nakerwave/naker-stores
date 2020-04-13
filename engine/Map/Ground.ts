@@ -47,6 +47,10 @@ export class Ground {
         this.addGround();
         this.setEvents(mouseCatcher, responsiveCatcher);
         this.setCameraRotation(Vector2.Zero());
+
+        window.addEventListener("mousemove", (evt: Event) =>{
+            this.checkEdgeMove(evt);
+        });
     }
 
     ground: Mesh;
@@ -82,6 +86,46 @@ export class Ground {
         }, () => {
             this.currentTarget = center;
             if (callback) callback();
+        });
+    }
+
+    movingStep = Vector2.Zero();
+    target = Vector3.Zero();
+    step = 1;
+    stepMax = 2;
+    screenGap = 50;
+    sceneGap = 100;
+    cameraMoving = false;
+    checkEdgeMove(evt: Event) {
+        let point = new Vector2(evt.clientX, evt.clientY);
+        let width = this.system.engine.getRenderWidth();
+        let height = this.system.engine.getRenderHeight();
+        let step = Vector2.Zero();
+        
+        if (point.x < this.screenGap) step.x = -this.step;
+        if (point.x > width - this.screenGap) step.x = this.step;
+        if (point.y < this.screenGap * 3) step.y = this.step;
+        if (point.y > height - this.screenGap) step.y = -this.step;
+        
+        if (step.x || step.y) {
+            this.movingStep.y = step.y;
+            this.movingStep.x = step.x;
+            if (!this.cameraMoving) this.moveCameraAxis();
+            this.cameraMoving = true;
+        } else {
+            this.animation.stop();
+            this.cameraMoving = false;
+        }
+    }
+
+    moveCameraAxis() {
+        // To make suse it will start if went to far
+        this.target.x = Math.max(Math.min(this.target.x, 20), -20);
+        this.target.z = Math.max(Math.min(this.target.z, 20), -20);
+        this.animation.simple(100, (count, perc) => {
+            if (Math.abs(this.target.x) <= 20) this.target.x += perc * this.movingStep.x;
+            if (Math.abs(this.target.z) <= 20) this.target.z += perc * this.movingStep.y;
+            this.system.camera.setTarget(this.target);
         });
     }
 
@@ -149,7 +193,7 @@ export class Ground {
 
     mousePosition = new Vector2(0, 0);
     setCameraRotation(rot: Vector2) {
-        this.system.camera.alpha = -0.1 * rot.y * this.realSensitivity - Math.PI / 4;
+        this.system.camera.alpha = -0.1 * rot.y * this.realSensitivity - Math.PI / 3;
         this.system.camera.beta = -0.1 * rot.x * this.realSensitivity + Math.PI / 4;
     }
 

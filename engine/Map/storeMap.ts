@@ -95,6 +95,7 @@ export class StoreMap {
 
     maxStores = 20;
     searchDistance = 0.3;
+    ratioDistance = 50;
     getStoresInBox(latlng: Array<number>): Array<StoreData> {
         let storesInBox = [];
         for (let i = 0; i < stores.length; i++) {
@@ -116,7 +117,7 @@ export class StoreMap {
         let furthestStore = storesLimit[storesLimit.length - 1];
         let furthestDistance = furthestStore.distance;
         
-        let ratioVector = new Vector2(30 / furthestDistance, 30 / furthestDistance);
+        let ratioVector = new Vector2(this.ratioDistance / furthestDistance, this.ratioDistance / furthestDistance);
         for (let i = 0; i < storesLimit.length; i++) {
             const store = storesLimit[i];
             store.position.multiplyInPlace(ratioVector);
