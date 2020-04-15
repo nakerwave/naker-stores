@@ -20,6 +20,6 @@ export class Tree extends MeshEntity {
     }
 
     addModel() {
-        this.loadModel('tree', 'https://cosmos.wazana.io/model/tree/tree1.gltf');
+        this.loadModel('tree', 'tree1.gltf');
     }
 }

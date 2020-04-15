@@ -18,14 +18,16 @@ export class MeshEntity extends PositionEntity {
         this.showCurve.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
     }
 
-    loadModel(name: string, modelUrl: string) {
-        this.system.loadModel(modelUrl, name, (model) => {
+    assetUrl = 'https://test.naker.io/stores/asset/';
+    loadModel(name: string, modelFile: string, callback?: Function) {
+        this.system.loadModel(this.assetUrl+modelFile, name, (model) => {
             for (let i = 0; i < model.length; i++) {
                 const mesh = model[i];
                 mesh.parent = this.mesh;
                 mesh.receiveShadow = false;
                 // this.system.shadowGenerator.getShadowMap().renderList.push(mesh);
             }
+            if (callback) callback(model);
         });
     }
 

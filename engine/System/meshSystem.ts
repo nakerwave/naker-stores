@@ -22,13 +22,6 @@ import { Loader } from './loader';
  * The system is really important as it is often sent in every other class created to manage core assets
  */
 
-export let StarTemperatures: Array<number> = [
-    3000,
-    5000,
-    12000,
-    30000,
-];
-
 export class MeshSystem extends EnvironmentSystem {
    
     /**
@@ -110,7 +103,7 @@ export class MeshSystem extends EnvironmentSystem {
         // }
         this.dustMaterial.unfreeze();
         this.storeMaterial.unfreeze();
-        this.ribbonMaterial.unfreeze();
+        // this.ribbonMaterial.unfreeze();
     }
 
     freezeMaterials() {
@@ -120,7 +113,7 @@ export class MeshSystem extends EnvironmentSystem {
         // }
         this.dustMaterial.freeze();
         this.storeMaterial.freeze();
-        this.ribbonMaterial.freeze();
+        // this.ribbonMaterial.freeze();
     }
 
     checkMaterials() {

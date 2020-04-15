@@ -51,6 +51,10 @@ export class Ground {
         window.addEventListener("mousemove", (evt: Event) =>{
             this.checkEdgeMove(evt);
         });
+
+        window.addEventListener("mouseout", (evt: Event) => {
+            this.stopCameraMove();
+        });
     }
 
     ground: Mesh;
@@ -110,15 +114,14 @@ export class Ground {
         if (step.x || step.y) {
             this.movingStep.y = step.y;
             this.movingStep.x = step.x;
-            if (!this.cameraMoving) this.moveCameraAxis();
+            if (!this.cameraMoving) this.startCameraMove();
             this.cameraMoving = true;
         } else {
-            this.animation.stop();
-            this.cameraMoving = false;
+            this.stopCameraMove();
         }
     }
 
-    moveCameraAxis() {
+    startCameraMove() {
         // To make suse it will start if went to far
         this.target.x = Math.max(Math.min(this.target.x, 20), -20);
         this.target.z = Math.max(Math.min(this.target.z, 20), -20);
@@ -127,6 +130,11 @@ export class Ground {
             if (Math.abs(this.target.z) <= 20) this.target.z += perc * this.movingStep.y;
             this.system.camera.setTarget(this.target);
         });
+    }
+
+    stopCameraMove() {
+        this.animation.stop();
+        this.cameraMoving = false;
     }
 
     showFog(callback?: Function) {

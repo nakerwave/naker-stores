@@ -2,11 +2,12 @@ import { UiSystem } from '../System/uiSystem';
 import { ModalUI } from '../Ui/modal';
 import { MeshEntity } from './meshEntity';
 
-import { Color3, Vector2 } from '@babylonjs/core/Maths/math';
+import { Color3, Vector2, Vector3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
 import { Control } from '@babylonjs/gui/2D/controls/control';
+import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 
 import '@babylonjs/core/Culling/ray';
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
@@ -20,6 +21,7 @@ import { Road } from '../Map/road';
 export interface StoreInterface {
     name: string;
     color: Color3;
+    model: string;
 };
 
 export interface StoreData {
@@ -34,26 +36,32 @@ export let storeList: Array < StoreInterface > = [
     {
         name: 'farm',
         color: new Color3(1, 0, 0),
+        model: 'Fermier.obj',
     },
     {
         name: 'cheese',
         color: new Color3(0, 1, 0),
+        model: 'Laitier.obj',
     },
     {
         name: 'seafood',
         color: new Color3(0, 0, 1),
+        model: 'Viande.obj',
     },
     {
         name: 'greengrocer',
         color: new Color3(1, 1, 0),
+        model: 'Fermier.obj',
     },
     {
         name: 'wine',
         color: new Color3(0, 1, 1),
+        model: 'Vin.obj',
     },
     {
         name: 'pastry',
         color: new Color3(1, 0, 1),
+        model: 'Boulanger.obj',
     },
 ];
 
@@ -69,25 +77,37 @@ export class Store extends MeshEntity {
         this.modal = modal;
         this.storePath = storePath;
 
-        this.setSize(4);
+        this.setSize(3);
         this.addMesh();
+        this.addEventMesh();
         this.addLabel();
         this.hide();
-        this.setEvent();
     }
 
-    mesh: Mesh;
-    addMesh() {
+    eventMesh: Mesh;
+    addEventMesh() {
         // this.mesh = MeshBuilder.CreateIcoSphere(this.key + "star", { radius: 1, flat: true, subdivisions: 2 }, this.system.scene);
         // this.mesh = this.system.StoreMesh.clone(this.key + "duststar");
-        this.mesh = MeshBuilder.CreateBox("store", {}, this.system.scene);
+        this.eventMesh = MeshBuilder.CreateBox("store", {}, this.system.scene);
         // this.mesh = this.system.storeMesh.createInstance(this.key + "duststar");
-        this.mesh.alwaysSelectAsActiveMesh = true;
-        this.mesh.doNotSyncBoundingInfo = true;
-        this.mesh.isVisible = true;
-        // this.mesh.rotation.y = Math.PI/3;
-        this.mesh.material = new PBRMaterial("storeMaterial", this.system.scene);
-        this.mesh.material.roughness = 1;
+        this.eventMesh.alwaysSelectAsActiveMesh = true;
+        this.eventMesh.doNotSyncBoundingInfo = true;
+        this.eventMesh.isVisible = true;
+        this.eventMesh.visibility = 0.001;
+        this.eventMesh.scaling = new Vector3(this.size * 0.7, this.size * 0.7, this.size * 0.7);
+        this.eventMesh.parent = this.mesh;
+    }
+
+    mesh: TransformNode;
+    addMesh() {
+        this.mesh = new TransformNode(this.key, this.system.scene);
+        this.loadModel('base', 'commerce_BASE.obj', (model) => {
+            for (let i = 0; i < model.length; i++) {
+                const mesh = model[i];
+                mesh.rotation.y = Math.PI / 2;
+            }
+            this.setEvent();
+        });
     }
 
     setEvent() {
@@ -95,10 +115,12 @@ export class Store extends MeshEntity {
             this.modal.show(this.latlng);
         });
         this.on('enter', () => {
+            this.launchRotateAnimation();            
             this.showLabel();
             this.storePath.setDestination(this.position);
         });
         this.on('leave', () => {
+            this.stopRotateAnimation();
             this.hideLabel();
             this.storePath.hide();
         });
@@ -134,12 +156,40 @@ export class Store extends MeshEntity {
 
     name: string;
     latlng: Array<number>
+    storeModel: Array<Mesh>
     setStore(type: string, name: string, latlng: Array<number>) {
         this.name = name;
         this.latlng = latlng;
         let storeType = find(storeList, (s) => { return s.name == type });
-        this.mesh.material.albedoColor = storeType.color;
+        this.loadModel(storeType.name, storeType.model, (storeModel) =>{
+            this.storeModel = storeModel;
+        });
+
+        // this.mesh.material.albedoColor = storeType.color;
         this.label.setStyle({background: storeType.color.toHexString()});
+    }
+
+    currentRotation: number;
+    launchRotateAnimation() {
+        this.animation.infinite((count, perc) => {
+            this.currentRotation = count / 20 % (Math.PI * 2);
+            this.setStoreModelRotation(this.currentRotation);
+        });
+    }
+
+    stopRotateAnimation() {
+        this.animation.simple(50, (count, perc) => {
+            let easePerc = this.showCurve.ease(1 - perc);
+            let rotation = easePerc * this.currentRotation;
+            this.setStoreModelRotation(rotation);
+        });
+    }
+
+    setStoreModelRotation(rotation: number) {
+        for (let i = 0; i < this.storeModel.length; i++) {
+            const mesh = this.storeModel[i];
+            mesh.rotation.y = rotation;
+        }
     }
 
     hideAnim(callback?: Function) {
@@ -184,9 +234,9 @@ export class Store extends MeshEntity {
         leave: 'OnPointerOutTrigger',
     };
     on(event: string, funct: Function) {
-        if (this.mesh.actionManager == undefined) this.mesh.actionManager = new ActionManager(this.system.scene);
+        if (this.eventMesh.actionManager == undefined) this.eventMesh.actionManager = new ActionManager(this.system.scene);
         let babylonevent = this.renameEvent[event];
-        this.mesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager[babylonevent], () => {
+        this.eventMesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager[babylonevent], () => {
             funct();
         }));
     }
