@@ -22,6 +22,7 @@ export interface StoreInterface {
     name: string;
     color: Color3;
     model: string;
+    scale: number;
 };
 
 export interface StoreData {
@@ -36,32 +37,50 @@ export let storeList: Array < StoreInterface > = [
     {
         name: 'farm',
         color: new Color3(1, 0, 0),
-        model: 'Fermier.obj',
+        model: 'Legumes1-Tomates.glb',
+        scale: 2,
     },
     {
         name: 'cheese',
         color: new Color3(0, 1, 0),
-        model: 'Laitier.obj',
+        model: 'Lait.glb',
+        scale: 1,
     },
     {
         name: 'seafood',
         color: new Color3(0, 0, 1),
-        model: 'Viande.obj',
+        model: 'Poisson.glb',
+        scale: 1,
     },
     {
         name: 'greengrocer',
         color: new Color3(1, 1, 0),
-        model: 'Fermier.obj',
+        model: 'Legumes2-courgette.glb',
+        scale: 2,
     },
     {
         name: 'wine',
         color: new Color3(0, 1, 1),
-        model: 'Vin.obj',
+        model: 'Vin.glb',
+        scale: 1,
     },
     {
         name: 'pastry',
         color: new Color3(1, 0, 1),
-        model: 'Boulanger.obj',
+        model: 'Pain.glb',
+        scale: 2,
+    },
+    {
+        name: 'beverages',
+        color: new Color3(1, 0, 1),
+        model: 'Legumes2-courgette.glb',
+        scale: 2,
+    },
+    {
+        name: 'butcher',
+        color: new Color3(1, 0, 1),
+        model: 'Viande.glb',
+        scale: 1,
     },
 ];
 
@@ -77,7 +96,7 @@ export class Store extends MeshEntity {
         this.modal = modal;
         this.storePath = storePath;
 
-        this.setSize(3);
+        this.setSize(20);
         this.addMesh();
         this.addEventMesh();
         this.addLabel();
@@ -94,20 +113,23 @@ export class Store extends MeshEntity {
         this.eventMesh.doNotSyncBoundingInfo = true;
         this.eventMesh.isVisible = true;
         this.eventMesh.visibility = 0.001;
-        this.eventMesh.scaling = new Vector3(this.size * 0.7, this.size * 0.7, this.size * 0.7);
+        this.eventMesh.scaling = new Vector3(this.size * 0.01, this.size * 0.01, this.size * 0.01);
         this.eventMesh.parent = this.mesh;
     }
 
     mesh: TransformNode;
     addMesh() {
         this.mesh = new TransformNode(this.key, this.system.scene);
-        this.loadModel('base', 'commerce_BASE.obj', (model) => {
-            for (let i = 0; i < model.length; i++) {
-                const mesh = model[i];
-                mesh.rotation.y = Math.PI / 2;
-            }
+        this.loadModel('base', 'Commerce.glb', (model) => {
             this.setEvent();
         });
+    }
+
+    // GLTF MODEL
+    scaleMesh(scale: number) {
+        this.mesh.scaling.x = scale;
+        this.mesh.scaling.y = scale;
+        this.mesh.scaling.z = -scale;
     }
 
     setEvent() {
@@ -155,14 +177,22 @@ export class Store extends MeshEntity {
     }
 
     name: string;
-    latlng: Array<number>
-    storeModel: Array<Mesh>
+    latlng: Array<number>;
+    storeModel: Array<Mesh>;
     setStore(type: string, name: string, latlng: Array<number>) {
         this.name = name;
         this.latlng = latlng;
-        let storeType = find(storeList, (s) => { return s.name == type });
+        let storeType = find(storeList, (s) => { return type.indexOf(s.name) != -1 });
+        if (!storeType) return console.log(type);
         this.loadModel(storeType.name, storeType.model, (storeModel) =>{
             this.storeModel = storeModel;
+            for (let i = 0; i < this.storeModel.length; i++) {
+                const mesh = this.storeModel[i];
+                mesh.position.y = 0.15;
+                mesh.scaling.x = 0.5 * storeType.scale;
+                mesh.scaling.y = 0.5 * storeType.scale;
+                mesh.scaling.z = 0.5 * storeType.scale;
+            }
         });
 
         // this.mesh.material.albedoColor = storeType.color;
