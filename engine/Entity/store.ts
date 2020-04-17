@@ -17,7 +17,7 @@ import { Car, houseDoorWayVector, storeDoorWayVector } from '../Map/car';
 import { Road } from '../Map/road';
 
 export interface StoreInterface {
-    name: string;
+    type: string;
     color: Color3;
     model: string;
     scale: number;
@@ -33,49 +33,49 @@ export interface StoreData {
 
 export let storeList: Array < StoreInterface > = [
     {
-        name: 'farm',
+        type: 'farm',
         color: new Color3(1, 0, 0),
         model: 'Legumes1-Tomates.glb',
         scale: 2,
     },
     {
-        name: 'cheese',
+        type: 'cheese',
         color: new Color3(0, 1, 0),
         model: 'Lait.glb',
         scale: 1,
     },
     {
-        name: 'seafood',
+        type: 'seafood',
         color: new Color3(0, 0, 1),
         model: 'Poisson.glb',
         scale: 1,
     },
     {
-        name: 'greengrocer',
+        type: 'greengrocer',
         color: new Color3(1, 1, 0),
         model: 'Legumes2-courgette.glb',
         scale: 2,
     },
     {
-        name: 'wine',
+        type: 'wine',
         color: new Color3(0, 1, 1),
         model: 'Vin.glb',
         scale: 1,
     },
     {
-        name: 'pastry',
+        type: 'pastry',
         color: new Color3(1, 0, 1),
         model: 'Pain.glb',
         scale: 2,
     },
     {
-        name: 'beverages',
+        type: 'beverages',
         color: new Color3(1, 0, 1),
         model: 'Legumes2-courgette.glb',
         scale: 2,
     },
     {
-        name: 'butcher',
+        type: 'butcher',
         color: new Color3(1, 0, 1),
         model: 'Viande.glb',
         scale: 1,
@@ -116,9 +116,15 @@ export class Store extends MeshEntity {
     }
 
     mesh: TransformNode;
+    commerceModel: Array<Mesh>;
     addMesh() {
         this.mesh = new TransformNode(this.key, this.system.scene);
         this.loadModel('base', 'Commerce.glb', (model) => {
+            this.commerceModel = model;
+            setTimeout(() => {
+                let storeType = find(storeList, (s) => { return this.type.indexOf(s.type) != -1 });
+                model[1].material.albedoColor = storeType.color;
+            }, 200)
             this.setEvent();
         });
     }
@@ -151,7 +157,7 @@ export class Store extends MeshEntity {
     addLabel() {
         this.label = new ui_text(this.system, this.system.sceneAdvancedTexture, '', { x: 0, y: 0 }, { fontSize: 20, float: 'center' });
         this.label.setTextStyle({ textVerticalAlignment: Control.VERTICAL_ALIGNMENT_TOP });
-        this.label.setStyle({ cornerRadius: 5 });
+        this.label.setStyle({ cornerRadius: 0 });
         // this.label.setStyle({ cornerRadius: 5, paddingLeft: 5, paddingRight: 5 });
         this.label.container.linkOffsetY = 60;
         this.label.container.linkWithMesh(this.mesh);
@@ -175,26 +181,28 @@ export class Store extends MeshEntity {
     }
 
     name: string;
+    type: string;
     latlng: Array<number>;
     storeModel: Array<Mesh>;
     setStore(type: string, name: string, latlng: Array<number>) {
+        this.type = type;
         this.name = name;
         this.latlng = latlng;
-        let storeType = find(storeList, (s) => { return type.indexOf(s.name) != -1 });
+        let storeType = find(storeList, (s) => { return type.indexOf(s.type) != -1 });
         if (!storeType) return console.log(type);
         this.loadModel(storeType.name, storeType.model, (storeModel) =>{
             this.storeModel = storeModel;
-            for (let i = 0; i < this.storeModel.length; i++) {
-                const mesh = this.storeModel[i];
+            for (let i = 0; i < storeModel.length; i++) {
+                const mesh = storeModel[i];
                 mesh.position.y = 0.15;
                 mesh.scaling.x = 0.5 * storeType.scale;
                 mesh.scaling.y = 0.5 * storeType.scale;
                 mesh.scaling.z = 0.5 * storeType.scale;
             }
         });
-
+        
         // this.mesh.material.albedoColor = storeType.color;
-        this.label.setStyle({background: storeType.color.toHexString()});
+        // this.label.setStyle({background: storeType.color.toHexString()});
     }
 
     currentRotation: number;

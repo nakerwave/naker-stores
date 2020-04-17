@@ -47,8 +47,6 @@ export class Car extends MeshEntity {
                 const mesh = model[i];
                 mesh.rotation.z = -Math.PI / 2;
                 mesh.position.y = 1;
-                console.log(mesh);
-                
             }
             this.showAnim();
         });

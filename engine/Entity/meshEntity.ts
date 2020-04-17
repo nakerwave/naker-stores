@@ -25,6 +25,8 @@ export class MeshEntity extends PositionEntity {
                 const mesh = model[i];
                 mesh.parent = this.mesh;
                 mesh.receiveShadow = false;
+                mesh.alwaysSelectAsActiveMesh = true;
+                mesh.doNotSyncBoundingInfo = true;
                 // this.system.shadowGenerator.getShadowMap().renderList.push(mesh);
             }
             if (callback) callback(model);
