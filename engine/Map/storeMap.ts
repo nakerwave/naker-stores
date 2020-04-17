@@ -63,7 +63,8 @@ export class StoreMap {
     spotWidthNumber = 20;
     setStorePositionInGrid(storesNearby: Array<StoreData>): Array<StoreData> {
         this.gridSpot = Array(this.spotWidthNumber).fill().map(() => Array(this.spotWidthNumber).fill());
-        
+        // Do not put store where the house is
+        this.gridSpot[this.spotWidthNumber/2][this.spotWidthNumber/2] = 1;
         for (let i = 0; i < storesNearby.length; i++) {
             const store = storesNearby[i];
             store.position = this.getStoreSpot(store);

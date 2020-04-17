@@ -48,7 +48,7 @@ export let storeList: Array < StoreInterface > = [
         type: 'seafood',
         color: new Color3(0, 0, 1),
         model: 'Poisson.glb',
-        scale: 1,
+        scale: 0.2,
     },
     {
         type: 'greengrocer',
@@ -60,7 +60,7 @@ export let storeList: Array < StoreInterface > = [
         type: 'wine',
         color: new Color3(0, 1, 1),
         model: 'Vin.glb',
-        scale: 1,
+        scale: 0.5,
     },
     {
         type: 'pastry',
