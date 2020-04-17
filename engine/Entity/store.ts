@@ -5,17 +5,15 @@ import { MeshEntity } from './meshEntity';
 import { Color3, Vector2, Vector3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
-import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
 import { Control } from '@babylonjs/gui/2D/controls/control';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 
-import '@babylonjs/core/Culling/ray';
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 
 import find from 'lodash/find';
 import { ui_text } from '../Ui/node';
-import { StorePath, houseDoorWayVector, storeDoorWayVector } from '../Map/storePath';
+import { Car, houseDoorWayVector, storeDoorWayVector } from '../Map/car';
 import { Road } from '../Map/road';
 
 export interface StoreInterface {
@@ -89,12 +87,12 @@ export class Store extends MeshEntity {
     color?: Array<number>;
     system: UiSystem;
     modal: ModalUI;
-    storePath: StorePath;
+    car: Car;
 
-    constructor(system: UiSystem, modal: ModalUI, storePath: StorePath) {
+    constructor(system: UiSystem, modal: ModalUI, car: car) {
         super('store', system);
         this.modal = modal;
-        this.storePath = storePath;
+        this.car = car;
 
         this.setSize(20);
         this.addMesh();
@@ -139,12 +137,12 @@ export class Store extends MeshEntity {
         this.on('enter', () => {
             this.launchRotateAnimation();            
             this.showLabel();
-            this.storePath.setDestination(this.position);
+            this.car.setDestination(this.position);
         });
         this.on('leave', () => {
             this.stopRotateAnimation();
             this.hideLabel();
-            this.storePath.hide();
+            this.car.hide();
         });
     }
 
@@ -168,12 +166,12 @@ export class Store extends MeshEntity {
     roadStopScale = new Vector2(1.1, 1);
     road: Road;
     addRoad(pos: Vector2) {
-        let storePath = [
+        let car = [
             houseDoorWayVector,
             new Vector2(houseDoorWayVector.x, pos.y + storeDoorWayVector.y),
             new Vector2(pos.x, pos.y + storeDoorWayVector.y).multiply(this.roadStopScale),
         ];
-        this.road = new Road(storePath, this.system.scene);
+        this.road = new Road(car, this.system.scene);
     }
 
     name: string;

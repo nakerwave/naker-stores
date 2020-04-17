@@ -1,6 +1,7 @@
 import '@babylonjs/core/Materials/standardMaterial';
 import '@babylonjs/loaders';
 import '@babylonjs/core/Misc/dds';
+import '@babylonjs/core/Culling/ray';
 
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';

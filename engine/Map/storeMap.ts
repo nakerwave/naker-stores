@@ -1,8 +1,7 @@
 import { UiSystem } from '../System/uiSystem';
 import { Store, StoreData } from '../Entity/store';
 import { House } from '../Entity/house';
-import { StorePath, houseDoorWayVector, storeDoorWayVector } from './storePath';
-import { Road } from './road';
+import { Car } from './car';
 import { Ground } from './Ground';
 import { ModalUI } from '../Ui/modal';
 
@@ -24,13 +23,13 @@ export class StoreMap {
     house: House;
     ground: Ground;
     modal: ModalUI;
-    storePath: StorePath;
+    car: car;
 
     constructor(system: UiSystem, ground: Ground, modal: ModalUI) {
         this.system = system;
         this.ground = ground;
         this.modal = modal;
-        this.storePath = new StorePath(system);
+        this.car = new Car(system);
 
         this.house = new House(this.system);
     }
@@ -58,7 +57,6 @@ export class StoreMap {
         let storesNearby = this.getStoresInBox(latlng);
         this.storesNearby = this.setStorePositionInGrid(storesNearby);
         this.addStoresModels(this.storesNearby);
-        // this.addStoresRoads(this.storesNearby);
     }
 
     gridSpot: Array<Array<any>>;
@@ -131,7 +129,7 @@ export class StoreMap {
         this.house.showAnim();
         let j = 0;
         for (let i = 0; i < stores.length; i++) {
-            let newStore = new Store(this.system, this.modal, this.storePath);
+            let newStore = new Store(this.system, this.modal, this.car);
             let store = stores[i];
             newStore.setData(store);
             this.storeModels.push(newStore);
@@ -142,39 +140,4 @@ export class StoreMap {
             }, i * 200);
         }
     }
-
-    // addStoresRoads(stores: Array<any>) {
-    //     let SouthWestPath: Array<Vector2> = [ houseDoorWayVector ];
-    //     let SouthEstPath: Array<Vector2> = [ houseDoorWayVector ];
-    //     let NorthWestPath: Array<Vector2> = [ houseDoorWayVector ];
-    //     let NorthEstPath: Array<Vector2> = [ houseDoorWayVector ];
-    //     for (let i = 0; i < stores.length; i++) {
-    //         let store = stores[i];
-    //         let pos = store.position;
-    //         let doorWayPos = pos.subtract(houseDoorWayVector);
-    //         if (pos.x <= 0 && pos.y < 0) SouthWestPath.push(doorWayPos);
-    //         if (pos.x > 0 && pos.y <= 0) SouthEstPath.push(doorWayPos);
-    //         if (pos.x <= 0 && pos.y > 0) NorthWestPath.push(doorWayPos);
-    //         if (pos.x > 0 && pos.y >= 0) NorthEstPath.push(doorWayPos);
-    //     }
-    //     if (SouthWestPath.length > 1) new Road({ path: SouthWestPath, width: 1, closed: false, standardUV: false }, this.system.scene);
-    //     if (SouthEstPath.length > 1) new Road({ path: SouthEstPath, width: 1, closed: false, standardUV: false }, this.system.scene);
-    //     if (NorthWestPath.length > 1) new Road({ path: NorthWestPath, width: 1, closed: false, standardUV: false }, this.system.scene);
-    //     if (NorthEstPath.length > 1) new Road({ path: NorthEstPath, width: 1, closed: false, standardUV: false }, this.system.scene);
-    // }
-
-    // roadStopScale = new Vector2(1.1, 1);
-    // addStoresRoads(stores: Array<any>) {
-    //     for (let i = 0; i < stores.length; i++) {
-    //         let store = stores[i];
-    //         let pos = store.position;
-    //         let storePath: Array<Vector2>;
-    //         storePath = [
-    //             houseDoorWayVector,
-    //             new Vector2(houseDoorWayVector.x, pos.y + storeDoorWayVector.y),
-    //             new Vector2(pos.x, pos.y + storeDoorWayVector.y).multiply(this.roadStopScale),
-    //         ];
-    //         new Road(storePath, this.system.scene);
-    //     }
-    // }
 }

@@ -2,11 +2,11 @@ import { Animation } from '@naker/services/System/systemAnimation';
 
 import { MeshSystem } from '../System/meshSystem';
 import { point2D } from '../System/interface';
+import { MeshEntity } from '../Entity/meshEntity';
 
-import { Vector3, Vector2, Color3 } from '@babylonjs/core/Maths/math';
-import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import { Vector2 } from '@babylonjs/core/Maths/math';
 import { EasingFunction, CubicEase, } from '@babylonjs/core/Animations/easing';
-import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
+import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 
 export interface PositionEntityInterface {
     key?: string,
@@ -17,29 +17,41 @@ export interface PositionEntityInterface {
 export let houseDoorWayVector = new Vector2(4, 0);
 export let storeDoorWayVector = new Vector2(0, -4);
 
-export class StorePath {
+export class Car extends MeshEntity {
 
-    key: string;
-    system: MeshSystem;
-    tube: Mesh;
     curve: EasingFunction;
     animation: Animation;
 
     constructor(system: MeshSystem) {
-        this.system = system;
+        super('car', system);
         this.animation = new Animation(this.system);
         this.curve = new CubicEase();
         this.curve.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
 
-        let path = [Vector3.Zero(), new Vector3(0, 1, 0)];
-        this.tube = Mesh.CreateTube("tube", path, 0.5, 12, null, null, this.system.scene, true);
-        this.tube.alwaysSelectAsActiveMesh = true;
-        this.tube.doNotSyncBoundingInfo = true;
+        this.addMesh();
+        this.setSize(1);
+        this.hide();
+        this.addModel();
+        this.setPosition(houseDoorWayVector);
+    }
 
-        this.tube.material = new PBRMaterial("storeMaterial", this.system.scene);
-        this.tube.material.roughness = 1;
-        this.tube.material.albedoColor = new Color3(1, 1, 0);
-        this.tube.material.backFaceCulling = false;
+
+    mesh: TransformNode;
+    addMesh() {
+        this.mesh = new TransformNode(this.key, this.system.scene);
+    }
+
+    addModel() {
+        this.loadModel('car', 'Voiture2.glb', (model) => {
+            for (let i = 0; i < model.length; i++) {
+                const mesh = model[i];
+                mesh.rotation.z = -Math.PI / 2;
+                mesh.position.y = 1;
+                console.log(mesh);
+                
+            }
+            this.showAnim();
+        });
     }
 
     destination: Vector2;
@@ -74,7 +86,7 @@ export class StorePath {
     }
 
     setPosition(destination: Vector2) {
-        this.tube.position.x = destination.x;
-        this.tube.position.z = destination.y;
+        this.mesh.position.x = destination.x;
+        this.mesh.position.z = destination.y;
     }
 }

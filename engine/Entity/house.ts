@@ -2,8 +2,6 @@ import { UiSystem } from '../System/uiSystem';
 import { MeshEntity } from './meshEntity';
 
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
-
-import '@babylonjs/core/Culling/ray';
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 
