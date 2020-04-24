@@ -7,14 +7,15 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { Control } from '@babylonjs/gui/2D/controls/control';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
-
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 
 import find from 'lodash/find';
-import { ui_text } from '../Ui/node';
+import { ui_text, ui_image } from '../Ui/node';
 import { Car, houseDoorWayVector, storeDoorWayVector } from '../Map/car';
 import { Road } from '../Map/road';
+
+import pancarteUrl from '../../asset/pancarte4.png';
 
 export interface StoreInterface {
     type: string;
@@ -40,7 +41,7 @@ export let storeList: Array < StoreInterface > = [
     },
     {
         type: 'cheese',
-        color: new Color3(0, 1, 0),
+        color: new Color3(1, 1, 0),
         model: 'Lait.glb',
         scale: 1,
     },
@@ -52,19 +53,19 @@ export let storeList: Array < StoreInterface > = [
     },
     {
         type: 'greengrocer',
-        color: new Color3(1, 1, 0),
+        color: new Color3(0, 1, 0),
         model: 'Legumes2-courgette.glb',
         scale: 2,
     },
     {
         type: 'wine',
-        color: new Color3(0, 1, 1),
+        color: new Color3(0.5, 0, 0),
         model: 'Vin.glb',
         scale: 0.5,
     },
     {
         type: 'pastry',
-        color: new Color3(1, 0, 1),
+        color: new Color3(0.5, 0.3, 0),
         model: 'Pain.glb',
         scale: 2,
     },
@@ -76,7 +77,7 @@ export let storeList: Array < StoreInterface > = [
     },
     {
         type: 'butcher',
-        color: new Color3(1, 0, 1),
+        color: new Color3(1, 0.9, 0.9),
         model: 'Viande.glb',
         scale: 1,
     },
@@ -153,14 +154,21 @@ export class Store extends MeshEntity {
     }
 
     label: ui_text;
+    board: ui_image;
     labelpresent = false;
     addLabel() {
-        this.label = new ui_text(this.system, this.system.sceneAdvancedTexture, '', { x: 0, y: 0 }, { fontSize: 20, float: 'center' });
+        this.board = new ui_image(this.system, this.system.sceneAdvancedTexture, pancarteUrl, { x: 0, y: 0 }, { width: '150px' });
+        this.board.container.linkOffsetY = 60;
+        this.board.container.linkWithMesh(this.mesh);
+
+        this.label = new ui_text(this.system, this.system.sceneAdvancedTexture, '', { x: 0, y: 0 }, { width: '120px', fontSize: 14, float: 'center' });
         this.label.setTextStyle({ textVerticalAlignment: Control.VERTICAL_ALIGNMENT_TOP });
-        this.label.setStyle({ cornerRadius: 0 });
-        // this.label.setStyle({ cornerRadius: 5, paddingLeft: 5, paddingRight: 5 });
+        this.label.setStyle({ cornerRadius: 0, zInex: 1000, height: '100px' });
         this.label.container.linkOffsetY = 60;
+        this.label.container.linkOffsetX = -10;
         this.label.container.linkWithMesh(this.mesh);
+
+        this.hideLabel();
     }
 
     setData(store: StoreData) {
@@ -180,14 +188,13 @@ export class Store extends MeshEntity {
         this.road = new Road(car, this.system.scene);
     }
 
-    name: string;
     type: string;
     latlng: Array<number>;
     storeModel: Array<Mesh>;
     setStore(type: string, name: string, latlng: Array<number>) {
         this.type = type;
-        this.name = name;
         this.latlng = latlng;
+        this.setLabelText(name);
         let storeType = find(storeList, (s) => { return type.indexOf(s.type) != -1 });
         if (!storeType) return console.log(type);
         this.loadModel(storeType.name, storeType.model, (storeModel) =>{
@@ -240,14 +247,21 @@ export class Store extends MeshEntity {
         });
     }
 
+    maxLabelLength: 20;
+    setLabelText(text: string) {
+        let labelText = text.substring(0, this.maxLabelLength);
+        this.label.setText(labelText);
+        this.label.hide();
+    }
+
     showLabel() {
         this.label.show();
-        this.label.writeText(this.name);
+        this.board.show();
     }
 
     hideLabel() {
-        this.label.anim.stop();
         this.label.hide();
+        this.board.hide();
     }
     
     show() {

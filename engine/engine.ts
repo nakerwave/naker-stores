@@ -9,9 +9,10 @@ import { StoreMap } from './Map/storeMap';
 import { ModalUI } from './Ui/modal';
 import { setStyle } from 'redom';
 
-// Faire des noeud de commerces
 // Nord-Sud pas bon avec l'itinéraire
-// Permetre la navigation dans la map
+// Ajouter flèche sur les côtés 
+// Améliorer route texture
+// Temps de trajet pour aller au magasins
 
 export interface GameInterface {
     canvas?: HTMLCanvasElement,
@@ -31,7 +32,7 @@ export class GameEngine {
 
     constructor(gameOptions: GameInterface) {
         this.system = new UiSystem(gameOptions.canvas);
-        this.system.optimize();
+        // this.system.optimize();
 
         this.touchCatcher = new TouchCatcher(window);
         this.mouseCatcher = new MouseCatcher(this.system, this.touchCatcher);
@@ -59,10 +60,9 @@ export class GameEngine {
         this.system.launchRender();
         this.ground.addTrees();
         this.system.setSky(() => {
-
             // this.system.soundManager.load();
         });
     }
 }
 
-new GameEngine({canvas: document.getElementById('gameCanvas')});
+new GameEngine({ canvas: document.getElementById('gameCanvas') });

@@ -316,11 +316,11 @@ export class ui_text extends ui_node {
 
     constructor(system: UiSystem, texture: Control, text: string, pos: position, style: style, event ? : boolean) {
         super(system);
-        style.fontFamily = "'Noto Sans', sans-serif";
+        style.fontFamily = "'Trade Winds', cursive";
         this.setNode(text, style);
         this.createContainer(texture);
-        this.container.adaptWidthToChildren = true;
-        this.container.adaptHeightToChildren = true;
+        // this.container.adaptWidthToChildren = true;
+        // this.container.adaptHeightToChildren = true;
         this.setStyle(style);
         this.container.zIndex = 2;
         this.setPosition(pos);
@@ -334,6 +334,9 @@ export class ui_text extends ui_node {
     setNode(text: string, style: style) {
         this.node = new TextBlock();
         this.node.resizeToFit = true;
+        this.node.textWrapping = true;
+        this.node.lineSpacing = '-5px';
+
         this.text = text;
         this.node.text = text;
 

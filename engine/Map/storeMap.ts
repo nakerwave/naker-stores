@@ -23,7 +23,7 @@ export class StoreMap {
     house: House;
     ground: Ground;
     modal: ModalUI;
-    car: car;
+    car: Car;
 
     constructor(system: UiSystem, ground: Ground, modal: ModalUI) {
         this.system = system;
