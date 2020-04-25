@@ -10,6 +10,7 @@ import { CascadedShadowGenerator } from '@babylonjs/core/Lights/Shadows/cascaded
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight';
 import { SpotLight } from '@babylonjs/core/Lights/spotLight';
 import { Camera } from '@babylonjs/core/Cameras/camera';
+import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator';
 
 /**
  * Manage all the essential assets needed to build a 3D scene (Engine, Scene Cameras, etc)
@@ -41,7 +42,6 @@ export class System extends SystemAnimation {
         // this.scene.autoClear = false; // Color buffer
         // this.scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
         this.scene.blockfreeActiveMeshesAndRenderingGroups = true;
-        this.scene.shadowsEnabled = true;
         this.scene.fogEnabled = true;
 
         this.sceneAdvancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("scene", true, this.scene);
@@ -60,31 +60,33 @@ export class System extends SystemAnimation {
         // }, 1000);
     }
 
-    // shadowGenerator: CascadedShadowGenerator;
+    shadowGenerator: ShadowGenerator;
     light: DirectionalLight;
     addLight() {
-        this.light = new DirectionalLight('light', new Vector3(-1, -2, 1), this.scene);
+        this.light = new DirectionalLight('light', new Vector3(-1, -2, -1), this.scene);
+        this.light.intensity = 1;
         console.log(this.light);
         
-        // this.shadowGenerator = new CascadedShadowGenerator(1024, this.light);
+        this.scene.shadowsEnabled = true;
+        this.shadowGenerator = new ShadowGenerator(4096, this.light);
     }
     
     camera: ArcRotateCamera;
     setCamera() {
         let test = new UniversalCamera('camera', Vector3.Zero(), this.scene);
-        this.camera = new ArcRotateCamera('camera', 0, Math.PI/3, 50, Vector3.Zero(), this.scene);
+        this.camera = new ArcRotateCamera('camera', 0, Math.PI/3, 100, Vector3.Zero(), this.scene);
         this.scene.activeCamera = this.camera;
         this.camera.minZ = 0;
         this.camera.setTarget(Vector3.Zero());
         // this.camera.attachControl(this.canvas);
         
-        this.camera.mode = Camera.ORTHOGRAPHIC_CAMERA;
-        let aspect = this.scene.getEngine().getAspectRatio(this.camera);
-        let ortho = 30;
-        this.camera.orthoTop = ortho;
-        this.camera.orthoBottom = -ortho;
-        this.camera.orthoLeft = -ortho * aspect;
-        this.camera.orthoRight = ortho * aspect;
+        // this.camera.mode = Camera.ORTHOGRAPHIC_CAMERA;
+        // let aspect = this.scene.getEngine().getAspectRatio(this.camera);
+        // let ortho = 30;
+        // this.camera.orthoTop = ortho;
+        // this.camera.orthoBottom = -ortho;
+        // this.camera.orthoLeft = -ortho * aspect;
+        // this.camera.orthoRight = ortho * aspect;
     }
 
     center = Vector2.Zero();

@@ -1,6 +1,7 @@
 import { UiSystem } from '../System/uiSystem';
 import { MeshEntity } from './meshEntity';
 
+import { Vector2 } from '@babylonjs/core/Maths/math';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
@@ -38,6 +39,13 @@ export class House extends MeshEntity {
         this.mesh.scaling.x = scale;
         this.mesh.scaling.y = scale/5;
         this.mesh.scaling.z = -scale;
+    }
+
+    setPosition(pos: Vector2) {
+        this._setPosition(pos);
+        this.mesh.position.x = pos.x;
+        this.mesh.position.z = pos.y;
+        this.mesh.position.y = 0.4;
     }
 
     setEvent() {

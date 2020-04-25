@@ -1,18 +1,24 @@
 import { UiSystem } from './System/uiSystem';
 import { Ground } from './Map/Ground';
 import { SearchUI } from './Ui/search';
+import { StoreMap } from './Map/storeMap';
+import { ModalUI } from './Ui/modal';
+import { Pipeline } from './System/pipeline';
 
 import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
 import { ResponsiveCatcher } from '@naker/services/Catchers/responsiveCatcher';
 import { TouchCatcher } from '@naker/services/Catchers/touchCatcher';
-import { StoreMap } from './Map/storeMap';
-import { ModalUI } from './Ui/modal';
 import { setStyle } from 'redom';
 
 // Nord-Sud pas bon avec l'itinéraire
 // Ajouter flèche sur les côtés 
 // Améliorer route texture
 // Temps de trajet pour aller au magasins
+// Texture meilleure
+// Voir pour l'ombre
+// Plus d'éléments que les arbres
+// Rotation voiture
+// Voir améliorer vignette
 
 export interface GameInterface {
     canvas?: HTMLCanvasElement,
@@ -29,6 +35,7 @@ export class GameEngine {
     searchInput: SearchUI;
     modal: ModalUI;
     storeMap: StoreMap;
+    pipeline: Pipeline;
 
     constructor(gameOptions: GameInterface) {
         this.system = new UiSystem(gameOptions.canvas);
@@ -38,6 +45,19 @@ export class GameEngine {
         this.mouseCatcher = new MouseCatcher(this.system, this.touchCatcher);
         this.mouseCatcher.start();
         this.responsiveCatcher = new ResponsiveCatcher(this.system, true);
+        this.pipeline = new Pipeline(this.system, this.responsiveCatcher);
+        
+        // setInterval(() => {
+        //     this.pipeline.defaultPipeline.depthOfField.focusDistance += 1000;
+        //     console.log(this.pipeline.defaultPipeline.depthOfField.focusDistance);
+        // }, 100);
+
+        this.pipeline.setFocalLength(10000);
+        // Value for orthographic camera
+        // this.pipeline.setFocalDistance(-1);
+        this.pipeline.setFocalDistance(80);
+        this.pipeline.addCamera(this.system.camera);
+        this.pipeline.setVignette([0, 0, 0, 0.05]);
         
         this.modal = new ModalUI();
         this.searchInput = new SearchUI(this.modal);

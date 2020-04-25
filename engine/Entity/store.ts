@@ -36,8 +36,8 @@ export let storeList: Array < StoreInterface > = [
     {
         type: 'farm',
         color: new Color3(1, 0, 0),
-        model: 'Legumes1-Tomates.glb',
-        scale: 2,
+        model: 'Panier.glb',
+        scale: 0.8,
     },
     {
         type: 'cheese',
@@ -48,12 +48,12 @@ export let storeList: Array < StoreInterface > = [
     {
         type: 'seafood',
         color: new Color3(0, 0, 1),
-        model: 'Poisson.glb',
+        model: 'Poisson2.glb',
         scale: 0.2,
     },
     {
         type: 'greengrocer',
-        color: new Color3(0, 1, 0),
+        color: new Color3(0, 0.7, 0),
         model: 'Legumes2-courgette.glb',
         scale: 2,
     },
@@ -66,8 +66,8 @@ export let storeList: Array < StoreInterface > = [
     {
         type: 'pastry',
         color: new Color3(0.5, 0.3, 0),
-        model: 'Pain.glb',
-        scale: 2,
+        model: 'Pain3.glb',
+        scale: 0.15,
     },
     {
         type: 'beverages',
@@ -137,6 +137,13 @@ export class Store extends MeshEntity {
         this.mesh.scaling.z = -scale;
     }
 
+    setPosition(pos: Vector2) {
+        this._setPosition(pos);
+        this.mesh.position.x = pos.x;
+        this.mesh.position.z = pos.y;
+        this.mesh.position.y = 2;
+    }
+
     setEvent() {
         this.on('click', () => {
             this.modal.show(this.latlng);
@@ -201,7 +208,7 @@ export class Store extends MeshEntity {
             this.storeModel = storeModel;
             for (let i = 0; i < storeModel.length; i++) {
                 const mesh = storeModel[i];
-                mesh.position.y = 0.15;
+                mesh.position.y = 0.2;
                 mesh.scaling.x = 0.5 * storeType.scale;
                 mesh.scaling.y = 0.5 * storeType.scale;
                 mesh.scaling.z = 0.5 * storeType.scale;

@@ -35,54 +35,12 @@ export class MeshSystem extends EnvironmentSystem {
 
     constructor(canvas: HTMLCanvasElement) {
         super(canvas);
-        this.addDustMesh();
-        this.addUpperDustMesh();
         this.addStoreMesh();
 
         this.soundManager = new SoundManager(this.scene);
         this.loader = new Loader(this.scene);
     }
 
-    dustMesh: Mesh;
-    dustMesh1: Mesh;
-    dustMesh2: Mesh;
-    dustMesh3: Mesh;
-    dustMesh4: Mesh;
-    addDustMesh() {
-        this.dustMaterial = this.getNewDustMaterial();
-        this.dustMaterial.emissiveColor = new Color3(1, 1, 0);
-        this.dustMesh = this.getNewDust();
-        this.dustMesh.material = this.dustMaterial; 
-    }
-
-    upperDustMesh: Mesh;
-    upperDustMaterial: StandardMaterial;
-    addUpperDustMesh() {
-        this.upperDustMaterial = this.getNewDustMaterial();
-        this.upperDustMaterial.emissiveColor = new Color3(1, 1, 1);
-        this.upperDustMesh = this.getNewDust();
-        this.upperDustMesh.material = this.upperDustMaterial;
-        this.upperDustMesh.scaling = new Vector3(0.06, 0.06, 0.06);
-    }
-    
-    getNewDust(): Mesh {
-        // this.mesh = MeshBuilder.CreateIcoSphere(this.key + "star", { radius: 1, flat: true, subdivisions: 2 }, this.system.scene);
-        // this.mesh.isBlocker = false;
-        let dustMesh = MeshBuilder.CreateSphere("dust", { diameter: 1 }, this.scene);
-        dustMesh.alwaysSelectAsActiveMesh = true;
-        dustMesh.doNotSyncBoundingInfo = true;
-        dustMesh.isVisible = false;
-        return dustMesh;
-    }
-    
-    dustMaterial: StandardMaterial;
-    getNewDustMaterial(): StandardMaterial {
-        let dustMaterial = new StandardMaterial("dustMaterial1", this.scene);
-        dustMaterial.maxSimultaneousLights = 0;
-        dustMaterial.diffuseColor = Color3.Black();
-        dustMaterial.specularColor = Color3.Black();
-        return dustMaterial;
-    }
 
     storeMesh: PearlMesh;
     storeMaterial: PBRMaterial;
@@ -102,7 +60,6 @@ export class MeshSystem extends EnvironmentSystem {
         //     const material = this.scene.materials[i];
         //     material.unfreeze();
         // }
-        this.dustMaterial.unfreeze();
         this.storeMaterial.unfreeze();
         // this.ribbonMaterial.unfreeze();
     }
@@ -112,7 +69,6 @@ export class MeshSystem extends EnvironmentSystem {
         //     const material = this.scene.materials[i];
         //     material.freeze();
         // }
-        this.dustMaterial.freeze();
         this.storeMaterial.freeze();
         // this.ribbonMaterial.freeze();
     }

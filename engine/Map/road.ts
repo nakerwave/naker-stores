@@ -5,7 +5,7 @@ import { Scene } from '@babylonjs/core/scene'
 import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 
-import roadTexture from '../../asset/road8.jpg';
+import roadTexture from '../../asset/road5.jpg';
 
 // var road = new Road({ path: path, width: 1, closed: true, standardUV: false }, scene);
 
@@ -188,8 +188,8 @@ export class Road {
         this.mesh.material.roughness = 1;
         this.mesh.material.metallic = 0;
         this.mesh.material.albedoTexture = new Texture(roadTexture, scene);
-        this.mesh.material.albedoColor = new Color3(1, 1, 0);
-        this.mesh.material.emissiveColor = new Color3(0.1, 0.1, 0.1);
+        // this.mesh.material.albedoColor = new Color3(1, 1, 0);
+        // this.mesh.material.emissiveColor = new Color3(0.1, 0.1, 0.1);
     }
 
     dispose() {

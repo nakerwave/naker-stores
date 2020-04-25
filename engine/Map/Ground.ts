@@ -66,7 +66,7 @@ export class Ground {
         this.ground = Mesh.CreatePlane("ground", mapSize * 2, this.system.scene);
         this.ground.alwaysSelectAsActiveMesh = true;
         this.ground.doNotSyncBoundingInfo = true;
-        this.ground.receiveShadows = true;
+        // this.ground.receiveShadows = true;
         // this.ground.convertToFlatShadedMesh();
         // this.gridground.renderingGroupId = 3;
         // this.ground.isVisible = false;

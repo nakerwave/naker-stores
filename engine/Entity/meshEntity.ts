@@ -24,7 +24,7 @@ export class MeshEntity extends PositionEntity {
             for (let i = 0; i < model.length; i++) {
                 const mesh = model[i];
                 mesh.parent = this.mesh;
-                mesh.receiveShadow = false;
+                // mesh.receiveShadow = true;
                 mesh.alwaysSelectAsActiveMesh = true;
                 mesh.doNotSyncBoundingInfo = true;
                 // this.system.shadowGenerator.getShadowMap().renderList.push(mesh);
@@ -41,14 +41,14 @@ export class MeshEntity extends PositionEntity {
     scaleMesh(scale: number) {
         this.mesh.scaling.x = scale;
         this.mesh.scaling.y = scale;
-        this.mesh.scaling.z = scale;
+        this.mesh.scaling.z = -scale;
     }
 
     setPosition(pos: Vector2) {
         this._setPosition(pos);
         this.mesh.position.x = pos.x;
         this.mesh.position.z = pos.y;
-        this.mesh.position.y = 1;
+        this.mesh.position.y = 0.1;
     }
 
     setRotation(rot: number) {
