@@ -45,6 +45,7 @@ export class Ground {
         this.system.scene.fogColor = new Color3(0.3, 0.6, 0.3);
 
         this.addGround();
+        this.loadDecor();
         this.setEvents(mouseCatcher, responsiveCatcher);
         this.setCameraRotation(Vector2.Zero());
 
@@ -73,6 +74,34 @@ export class Ground {
         this.ground.rotation.x = Math.PI/2;
         this.addGroundMaterial();
         this.ground.material = this.groundMaterial;
+    }
+
+    treeModel: Mesh;
+    rockModel: Mesh;
+    loadDecor() {
+        this.system.loadModel('low_poly_trees_grass_and_rocks/scene.gltf', (model) => {
+            for (let i = 0; i < model.length; i++) {
+                const mesh = model[i];
+                console.log(mesh.name);
+                if (mesh.parent) console.log(mesh.parent.name);
+                if (mesh.name == 'Tree1_Tree1_2.001_0') {
+                    this.treeModel = mesh.parent;
+                    this.treeModel.scaling = new Vector3(1, 1, 1);
+                }
+                if (mesh.name == 'Rock3_Rock1_1.001_0') {
+                    this.rockModel = mesh.parent;
+                    this.rockModel.scaling = new Vector3(1, 1, 1);
+                }
+                mesh.isVisible = false;
+                // mesh.receiveShadow = true;
+                mesh.alwaysSelectAsActiveMesh = true;
+                mesh.doNotSyncBoundingInfo = true;
+                // this.system.shadowGenerator.getShadowMap().renderList.push(mesh);
+            }
+
+            this.addTrees();
+            this.addRocks();
+        });
     }
 
     currentTarget = Vector2.Zero();
@@ -165,10 +194,37 @@ export class Ground {
 
     addTrees() {
         for (let i = 0; i < 20; i++) {
-            let tree = new Tree(this.system);
+            // let tree = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
+            let tree = this.treeModel.clone('tree' + i.toString());
+            let children = tree.getChildren();
+            for (let i = 0; i < children.length; i++) {
+                const mesh: Mesh = children[i];
+                mesh.isVisible = true;
+                // mesh.receiveShadow = true;
+                mesh.alwaysSelectAsActiveMesh = true;
+                mesh.doNotSyncBoundingInfo = true;
+            }
             let randomPos = this.getRandomPosition(1);
-            tree.setPosition(randomPos);
-            tree.showAnim();
+            tree.position.x = randomPos.x;
+            tree.position.z = randomPos.y;
+        }
+    }
+
+    addRocks() {
+        for (let i = 0; i < 20; i++) {
+            // let rock = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
+            let rock = this.rockModel.clone('rock' + i.toString());
+            let children = rock.getChildren();
+            for (let i = 0; i < children.length; i++) {
+                const mesh: Mesh = children[i];
+                mesh.isVisible = true;
+                // mesh.receiveShadow = true;
+                mesh.alwaysSelectAsActiveMesh = true;
+                mesh.doNotSyncBoundingInfo = true;
+            }
+            let randomPos = this.getRandomPosition(1);
+            rock.position.x = randomPos.x;
+            rock.position.z = randomPos.y;
         }
     }
 

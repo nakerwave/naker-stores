@@ -78,7 +78,6 @@ export class GameEngine {
         // this.system.camera.attachControl(gameOptions.canvas);
  
         this.system.launchRender();
-        this.ground.addTrees();
         this.system.setSky(() => {
             // this.system.soundManager.load();
         });

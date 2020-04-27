@@ -18,9 +18,8 @@ export class MeshEntity extends PositionEntity {
         this.showCurve.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
     }
 
-    assetUrl = 'https://test.naker.io/stores/asset/v2/';
     loadModel(name: string, modelFile: string, callback?: Function) {
-        this.system.loadModel(this.assetUrl+modelFile, name, (model) => {
+        this.system.loadModel(modelFile, (model) => {
             for (let i = 0; i < model.length; i++) {
                 const mesh = model[i];
                 mesh.parent = this.mesh;

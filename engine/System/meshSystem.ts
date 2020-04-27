@@ -3,11 +3,8 @@ import '@babylonjs/loaders';
 import '@babylonjs/core/Misc/dds';
 import '@babylonjs/core/Culling/ray';
 
-import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { Color3, Vector3 } from '@babylonjs/core/Maths/math';
 import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
 import { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
 import { InstancedMesh } from '@babylonjs/core/Meshes/instancedMesh';
@@ -82,6 +79,23 @@ export class MeshSystem extends EnvironmentSystem {
         // }, 100);
     }
 
+    groupInstance (masterParent: Mesh, name: string) {
+        var child;
+        var instchild;
+        // parents MUST be clones, and NOT instances, it seems. Verify to be sure.
+        var newParent = masterParent.clone(name);
+        // console.log(masterParent);
+
+        // make a new instance for each of masterParent's children
+        for (var index = 0; index < masterParent.getChildren().length; index++) {
+            child = masterParent.getChildren()[index]; // masterChild
+            instchild = child.createInstance();  // intancedChild
+            instchild.parent = newParent;  // parent the instancedChild to the new groupWidget
+
+            return newParent;  // return the new group widget.
+        }
+    }
+
     getModelPath(url: string) {
         let path = { file: '', folder: '' };
         let urlsplit = url.split('/');
@@ -90,10 +104,11 @@ export class MeshSystem extends EnvironmentSystem {
         return path;
     }
 
+    assetUrl = 'https://test.naker.io/stores/asset/v2/';
     model = {};
-    loadModel(url: string, name: string, callback: Function) {
+    loadModel(url: string, callback: Function) {
         let modelpath = this.getModelPath(url);
-        SceneLoader.ImportMesh("", modelpath.folder, modelpath.file, this.scene, (meshes, particleSystems, skeletons, animationGroups) => {
+        SceneLoader.ImportMesh("", this.assetUrl+modelpath.folder, modelpath.file, this.scene, (meshes, particleSystems, skeletons, animationGroups) => {
             callback(meshes);
             // this.modelSucces(url, name, { loadedMeshes: meshes, loadedAnimationGroups: animationGroups }, callback);
         }, null, (scene, message) => {

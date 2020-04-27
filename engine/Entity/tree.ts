@@ -9,7 +9,7 @@ export class Tree extends MeshEntity {
         super('tree', system);
 
         this.addMesh();
-        this.setSize(0.02);
+        this.setSize(1);
         this.setRotation(Math.PI / 2);
         this.addModel();
     }
@@ -20,6 +20,9 @@ export class Tree extends MeshEntity {
     }
 
     addModel() {
-        this.loadModel('tree', 'tree1.gltf');
+        this.loadModel('tree', 'low_poly_trees_grass_and_rocks/scene.gltf', (model) => {
+            console.log(model);
+            
+        });
     }
 }
