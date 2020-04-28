@@ -40,6 +40,7 @@ export class GameEngine {
     constructor(gameOptions: GameInterface) {
         this.system = new UiSystem(gameOptions.canvas);
         // this.system.optimize();
+        this.system.improveQualityAtBreak(true);
 
         this.touchCatcher = new TouchCatcher(window);
         this.mouseCatcher = new MouseCatcher(this.system, this.touchCatcher);
@@ -55,9 +56,9 @@ export class GameEngine {
         this.pipeline.setFocalLength(10000);
         // Value for orthographic camera
         // this.pipeline.setFocalDistance(-1);
-        this.pipeline.setFocalDistance(80);
+        this.pipeline.setFocalDistance(100);
         this.pipeline.addCamera(this.system.camera);
-        this.pipeline.setVignette([0, 0, 0, 0.05]);
+        this.pipeline.setVignette([0, 0, 0, 0.1]);
         
         this.modal = new ModalUI();
         this.searchInput = new SearchUI(this.modal);
@@ -74,7 +75,7 @@ export class GameEngine {
         //     setStyle(this.searchInput.form, { top: '-30px' });
         // }, 5000);
         
-        this.system.scene.freezeActiveMeshes();
+        // this.system.scene.freezeActiveMeshes();
         // this.system.camera.attachControl(gameOptions.canvas);
  
         this.system.launchRender();

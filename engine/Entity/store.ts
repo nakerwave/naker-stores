@@ -90,7 +90,7 @@ export class Store extends MeshEntity {
     modal: ModalUI;
     car: Car;
 
-    constructor(system: UiSystem, modal: ModalUI, car: car) {
+    constructor(system: UiSystem, modal: ModalUI, car: Car) {
         super('store', system);
         this.modal = modal;
         this.car = car;
@@ -164,11 +164,11 @@ export class Store extends MeshEntity {
     board: ui_image;
     labelpresent = false;
     addLabel() {
-        this.board = new ui_image(this.system, this.system.sceneAdvancedTexture, pancarteUrl, { x: 0, y: 0 }, { width: '150px' });
+        this.board = new ui_image(this.system, this.system.advancedTexture, pancarteUrl, { x: 0, y: 0 }, { width: '150px' });
         this.board.container.linkOffsetY = 60;
         this.board.container.linkWithMesh(this.mesh);
 
-        this.label = new ui_text(this.system, this.system.sceneAdvancedTexture, '', { x: 0, y: 0 }, { width: '120px', fontSize: 14, float: 'center' });
+        this.label = new ui_text(this.system, this.system.advancedTexture, '', { x: 0, y: 0 }, { width: '120px', fontSize: 14, float: 'center' });
         this.label.setTextStyle({ textVerticalAlignment: Control.VERTICAL_ALIGNMENT_TOP });
         this.label.setStyle({ cornerRadius: 0, zInex: 1000, height: '100px' });
         this.label.container.linkOffsetY = 60;

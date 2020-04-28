@@ -3,11 +3,11 @@ import { Animation } from '@naker/services/System/systemAnimation';
 import { ResponsiveCatcher } from '@naker/services/Catchers/responsiveCatcher';
 
 import { MeshSystem } from '../System/meshSystem';
-import { Tree } from '../Entity/tree';
 
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Vector2, Vector3, Color3 } from '@babylonjs/core/Maths/math';
 import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { Scene } from '@babylonjs/core/scene'
 import { EasingFunction, CubicEase, } from '@babylonjs/core/Animations/easing';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
@@ -65,9 +65,9 @@ export class Ground {
         // var sideO = Mesh.BACKSIDE;
         // this.ground = Mesh.Createground("ground", this.paths, false, false, 0, this.system.scene, true, sideO);
         this.ground = Mesh.CreatePlane("ground", mapSize * 2, this.system.scene);
-        this.ground.alwaysSelectAsActiveMesh = true;
-        this.ground.doNotSyncBoundingInfo = true;
-        // this.ground.receiveShadows = true;
+        // this.ground.alwaysSelectAsActiveMesh = true;
+        // this.ground.doNotSyncBoundingInfo = true;
+        this.ground.receiveShadows = true;
         // this.ground.convertToFlatShadedMesh();
         // this.gridground.renderingGroupId = 3;
         // this.ground.isVisible = false;
@@ -76,21 +76,35 @@ export class Ground {
         this.ground.material = this.groundMaterial;
     }
 
+    groundMaterial: PBRMaterial;
+    // groundMaterial: StandardMaterial;
+    addGroundMaterial() {
+        this.groundMaterial = new PBRMaterial("groundMaterial", this.system.scene);
+        this.groundMaterial.roughness = 1;
+        this.groundMaterial.metallic = 0.2;
+        this.groundMaterial.albedoColor = new Color3(1 / 255, 255 / 255, 56 / 255);
+
+        // this.groundMaterial = new StandardMaterial("groundMaterial", this.system.scene);
+        // this.groundMaterial.diffuseColor = new Color3(1 / 255, 255 / 255, 56 / 255);
+    }
+
     treeModel: Mesh;
     rockModel: Mesh;
     loadDecor() {
         this.system.loadModel('low_poly_trees_grass_and_rocks/scene.gltf', (model) => {
             for (let i = 0; i < model.length; i++) {
                 const mesh = model[i];
-                console.log(mesh.name);
+                // console.log(mesh.name);
                 if (mesh.parent) console.log(mesh.parent.name);
                 if (mesh.name == 'Tree1_Tree1_2.001_0') {
                     this.treeModel = mesh.parent;
-                    this.treeModel.scaling = new Vector3(1, 1, 1);
+                    // this.treeModel.position = new Vector3(0, -0.5, 0);
+                    this.treeModel.scaling = new Vector3(1, -1, 1);
                 }
                 if (mesh.name == 'Rock3_Rock1_1.001_0') {
                     this.rockModel = mesh.parent;
-                    this.rockModel.scaling = new Vector3(1, 1, 1);
+                    this.rockModel.position = new Vector3(0, 0.5, 0);
+                    this.rockModel.scaling = new Vector3(1, -1, 1);
                 }
                 mesh.isVisible = false;
                 // mesh.receiveShadow = true;
@@ -99,8 +113,8 @@ export class Ground {
                 // this.system.shadowGenerator.getShadowMap().renderList.push(mesh);
             }
 
-            this.addTrees();
-            this.addRocks();
+            this.addAllTreeGroup();
+            this.system.updateShadows();
         });
     }
 
@@ -192,40 +206,57 @@ export class Ground {
         });
     }
 
-    addTrees() {
+    addAllTreeGroup() {
         for (let i = 0; i < 20; i++) {
-            // let tree = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
-            let tree = this.treeModel.clone('tree' + i.toString());
-            let children = tree.getChildren();
-            for (let i = 0; i < children.length; i++) {
-                const mesh: Mesh = children[i];
-                mesh.isVisible = true;
-                // mesh.receiveShadow = true;
-                mesh.alwaysSelectAsActiveMesh = true;
-                mesh.doNotSyncBoundingInfo = true;
-            }
-            let randomPos = this.getRandomPosition(1);
-            tree.position.x = randomPos.x;
-            tree.position.z = randomPos.y;
+            this.addTreeGroup();
         }
     }
 
-    addRocks() {
-        for (let i = 0; i < 20; i++) {
-            // let rock = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
-            let rock = this.rockModel.clone('rock' + i.toString());
-            let children = rock.getChildren();
+    addTreeGroup() {
+        let randomPos = this.getRandomPosition(1);
+        for (let i = 0; i < 2; i++) {
+            this.addTree(randomPos);
+        }
+        for (let i = 0; i < 2; i++) {
+            this.addRock(randomPos);
+        }
+    }
+
+    addTree(center: Vector2) {
+            // let tree = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
+            let tree = this.treeModel.clone('tree');
+            let children = tree.getChildren();
+            // this.system.shadowGenerator.addShadowCaster(tree, true);
             for (let i = 0; i < children.length; i++) {
                 const mesh: Mesh = children[i];
                 mesh.isVisible = true;
-                // mesh.receiveShadow = true;
+                this.system.shadowGenerator.addShadowCaster(mesh);
                 mesh.alwaysSelectAsActiveMesh = true;
                 mesh.doNotSyncBoundingInfo = true;
             }
-            let randomPos = this.getRandomPosition(1);
-            rock.position.x = randomPos.x;
-            rock.position.z = randomPos.y;
+            let randomPos = this.getPositionAround(center);
+            tree.position.x = randomPos.x;
+            tree.position.z = randomPos.y;
+    }
+
+    addRock(center: Vector2) {
+        // let rock = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
+        let rock = this.rockModel.clone('rock');
+        let children = rock.getChildren();
+        for (let i = 0; i < children.length; i++) {
+            const mesh: Mesh = children[i];
+            mesh.isVisible = true;
+            this.system.shadowGenerator.addShadowCaster(mesh);
+            mesh.alwaysSelectAsActiveMesh = true;
+            mesh.doNotSyncBoundingInfo = true;
         }
+        let randomPos = this.getPositionAround(center);
+        rock.position.x = randomPos.x;
+        rock.position.z = randomPos.y;
+    }
+
+    getPositionAround(center: Vector2): Vector2 {
+        return center.add(new Vector2((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5));
     }
 
     getRandomPosition(ratio: number): Vector2 {
@@ -259,16 +290,5 @@ export class Ground {
     setCameraRotation(rot: Vector2) {
         this.system.camera.alpha = -0.1 * rot.y * this.realSensitivity - Math.PI / 3;
         this.system.camera.beta = -0.1 * rot.x * this.realSensitivity + Math.PI / 4;
-    }
-
-    groundMaterial: PBRMaterial;
-    addGroundMaterial() {
-        this.groundMaterial = new PBRMaterial("groundMaterial", this.system.scene);
-        this.groundMaterial.roughness = 1;
-        this.groundMaterial.metallic = 0.2;
-        this.groundMaterial.alpha = 1;
-        this.groundMaterial.albedoColor = new Color3(1 / 255, 255 / 255, 56 / 255);
-        // this.groundMaterial.albedoTexture = new Texture(grassAlbedoTexture, this.system.scene);
-        // this.groundMaterial.bumpTexture = new Texture(grassNormalTexture, this.system.scene);
     }
 }

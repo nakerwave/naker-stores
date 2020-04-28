@@ -26,7 +26,7 @@ export class MeshEntity extends PositionEntity {
                 // mesh.receiveShadow = true;
                 mesh.alwaysSelectAsActiveMesh = true;
                 mesh.doNotSyncBoundingInfo = true;
-                // this.system.shadowGenerator.getShadowMap().renderList.push(mesh);
+                this.system.shadowGenerator.addShadowCaster(mesh);
             }
             if (callback) callback(model);
         });
@@ -54,7 +54,7 @@ export class MeshEntity extends PositionEntity {
         this.mesh.rotation.y = rot;
     }
 
-    showAnimLength = 50;
+    showAnimLength = 20;
     showAnim(callback?: Function) {
         // this.mesh.isVisible = true;
         this.scaleMesh(0);

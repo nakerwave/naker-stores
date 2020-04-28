@@ -138,6 +138,7 @@ export class StoreMap {
                 this.storeModels[j].showAnim();
                 this.system.checkActiveMeshes();
                 j++;
+                if (j == this.maxStores) this.system.updateShadows();
             }, i * 200);
         }
     }

@@ -15,6 +15,7 @@ export class House extends MeshEntity {
         super('house', system);
         this.addMesh();
         this.setSize(13);
+        this.setPosition(Vector2.Zero());
         this.hide();
         this.addModel();
     }
@@ -30,7 +31,9 @@ export class House extends MeshEntity {
                 const mesh = model[i];
                 mesh.rotation.y = Math.PI;
             }
-            this.showAnim();
+            this.showAnim(() => {
+                this.system.updateShadows();
+            });
         });
     }
 
@@ -45,7 +48,7 @@ export class House extends MeshEntity {
         this._setPosition(pos);
         this.mesh.position.x = pos.x;
         this.mesh.position.z = pos.y;
-        this.mesh.position.y = 0.4;
+        this.mesh.position.y = -0.2;
     }
 
     setEvent() {
