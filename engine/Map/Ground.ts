@@ -1,6 +1,5 @@
 import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
 import { Animation } from '@naker/services/System/systemAnimation';
-import { ResponsiveCatcher } from '@naker/services/Catchers/responsiveCatcher';
 
 import { MeshSystem } from '../System/meshSystem';
 
@@ -11,6 +10,7 @@ import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { Scene } from '@babylonjs/core/scene'
 import { EasingFunction, CubicEase, } from '@babylonjs/core/Animations/easing';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
+import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 
 import grassAlbedoTexture from '../../asset/grass1.png';
 import grassNormalTexture from '../../asset/grassnorm1.png';
@@ -29,10 +29,12 @@ export class Ground {
     cameraMove: EasingFunction;
     cameraZoom: EasingFunction;
     animation: Animation;
+    fogAnimation: Animation;
 
-    constructor(system: MeshSystem, mouseCatcher: MouseCatcher, responsiveCatcher: ResponsiveCatcher) {
+    constructor(system: MeshSystem, mouseCatcher: MouseCatcher) {
         this.system = system;
         this.animation = new Animation(this.system);
+        this.fogAnimation = new Animation(this.system);
 
         this.cameraMove = new CubicEase();
         this.cameraMove.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
@@ -46,7 +48,7 @@ export class Ground {
 
         this.addGround();
         this.loadDecor();
-        this.setEvents(mouseCatcher, responsiveCatcher);
+        this.setEvents(mouseCatcher);
         this.setCameraRotation(Vector2.Zero());
 
         window.addEventListener("mousemove", (evt: Event) =>{
@@ -90,12 +92,14 @@ export class Ground {
 
     treeModel: Mesh;
     rockModel: Mesh;
+    grassModel: Mesh;
+    bushModel: Mesh;
     loadDecor() {
         this.system.loadModel('low_poly_trees_grass_and_rocks/scene.gltf', (model) => {
             for (let i = 0; i < model.length; i++) {
                 const mesh = model[i];
                 // console.log(mesh.name);
-                if (mesh.parent) console.log(mesh.parent.name);
+                // if (mesh.parent) console.log(mesh.parent.name);
                 if (mesh.name == 'Tree1_Tree1_2.001_0') {
                     this.treeModel = mesh.parent;
                     // this.treeModel.position = new Vector3(0, -0.5, 0);
@@ -105,6 +109,16 @@ export class Ground {
                     this.rockModel = mesh.parent;
                     this.rockModel.position = new Vector3(0, 0.5, 0);
                     this.rockModel.scaling = new Vector3(1, -1, 1);
+                }
+                if (mesh.name == 'Grass1_Grass1_1.001_0') {
+                    this.grassModel = mesh.parent;
+                    this.grassModel.position = new Vector3(0, 0.5, 0);
+                    this.grassModel.scaling = new Vector3(0.1, -0.1, 0.1);
+                }
+                if (mesh.name == 'Bush1_Bush1_1_0') {
+                    this.bushModel = mesh.parent;
+                    this.bushModel.position = new Vector3(0, 0.5, 0);
+                    this.bushModel.scaling = new Vector3(0.5, -0.5, 0.5);
                 }
                 mesh.isVisible = false;
                 // mesh.receiveShadow = true;
@@ -180,8 +194,34 @@ export class Ground {
         this.cameraMoving = false;
     }
 
+    newDecor(gridSpot: Array<Array<string>>, callback: Function) {
+        this.animFog(() => {
+
+        }, callback);
+    }
+
+    spotWidthNumber = 20;
+    spotWidth = 10;
+    getStoreSpot(store) {
+        let pos = store.position;
+        let roundPos = { x: Math.round(pos.x / this.spotWidth), y: Math.round(pos.y / this.spotWidth) };
+
+        let offset = this.spotWidthNumber / 2;
+        let gridPos = { x: roundPos.x + offset, y: roundPos.y + offset };
+
+        while (this.gridSpot[gridPos.x][gridPos.y]) {
+            gridPos.x += Math.round((Math.random() - 0.5) * 2);
+            gridPos.y += Math.round((Math.random() - 0.5) * 2);
+        }
+        this.gridSpot[gridPos.x][gridPos.y] = store.name;
+
+        pos.x = (gridPos.x - offset) * this.spotWidth;
+        pos.y = (gridPos.y - offset) * this.spotWidth;
+        return pos;
+    }
+
     showFog(callback?: Function) {
-        this.animation.simple(50, (count, perc) => {
+        this.fogAnimation.simple(50, (count, perc) => {
             let easePerc = this.cameraMove.ease(perc);
             this.system.scene.fogDensity = easePerc;
         }, () => {
@@ -190,7 +230,7 @@ export class Ground {
     }
 
     hideFog(callback?: Function) {
-        this.animation.simple(50, (count, perc) => {
+        this.fogAnimation.simple(50, (count, perc) => {
             let easePerc = this.cameraMove.ease(perc);
             this.system.scene.fogDensity = 1 - easePerc;
         }, () => {
@@ -198,9 +238,14 @@ export class Ground {
         });
     }
 
-    animFog(callback?: Function) {
-        this.animation.simple(100, (count, perc) => {
+    animFog(halfcallback: Function, callback?: Function) {
+        let test = false;
+        this.fogAnimation.simple(100, (count, perc) => {
             this.system.scene.fogDensity = Math.min(perc * 2, 2 - perc * 2)/10;
+            if (perc > 0.5 && !test) {
+                test = true;
+                halfcallback();
+            } 
         }, () => {
             if (callback) callback();
         });
@@ -212,51 +257,72 @@ export class Ground {
         }
     }
 
+    treeGroups: Array<TransformNode> = [];
     addTreeGroup() {
+        let treeGroupParent = new TransformNode('treeParent' + this.treeGroups.length.toString(), this.system.scene);
         let randomPos = this.getRandomPosition(1);
+        treeGroupParent.position.x = randomPos.x;
+        treeGroupParent.position.z = randomPos.y;
+        this.treeGroups.push(treeGroupParent);
         for (let i = 0; i < 2; i++) {
-            this.addTree(randomPos);
+            let mesh = this.addTree(treeGroupParent);
         }
         for (let i = 0; i < 2; i++) {
-            this.addRock(randomPos);
+            let mesh = this.addRock(treeGroupParent);
+        }
+        for (let i = 0; i < 2; i++) {
+            let mesh = this.addGrass(treeGroupParent);
+        }
+        for (let i = 0; i < 2; i++) {
+            let mesh = this.addBush(treeGroupParent);
         }
     }
 
-    addTree(center: Vector2) {
-            // let tree = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
-            let tree = this.treeModel.clone('tree');
-            let children = tree.getChildren();
-            // this.system.shadowGenerator.addShadowCaster(tree, true);
-            for (let i = 0; i < children.length; i++) {
-                const mesh: Mesh = children[i];
-                mesh.isVisible = true;
-                this.system.shadowGenerator.addShadowCaster(mesh);
-                mesh.alwaysSelectAsActiveMesh = true;
-                mesh.doNotSyncBoundingInfo = true;
-            }
-            let randomPos = this.getPositionAround(center);
-            tree.position.x = randomPos.x;
-            tree.position.z = randomPos.y;
+    addTree(parent: TransformNode): Mesh {
+        // let tree = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
+        let tree = this.treeModel.clone('tree');
+        this.addGroundMesh(tree, parent);
+        return tree;
     }
 
-    addRock(center: Vector2) {
+    addRock(parent: TransformNode): Mesh {
         // let rock = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
         let rock = this.rockModel.clone('rock');
-        let children = rock.getChildren();
-        for (let i = 0; i < children.length; i++) {
-            const mesh: Mesh = children[i];
-            mesh.isVisible = true;
-            this.system.shadowGenerator.addShadowCaster(mesh);
-            mesh.alwaysSelectAsActiveMesh = true;
-            mesh.doNotSyncBoundingInfo = true;
-        }
-        let randomPos = this.getPositionAround(center);
-        rock.position.x = randomPos.x;
-        rock.position.z = randomPos.y;
+        this.addGroundMesh(rock, parent);
+        return rock;
     }
 
-    getPositionAround(center: Vector2): Vector2 {
-        return center.add(new Vector2((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5));
+    addGrass(parent: TransformNode): Mesh {
+        // let grass = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
+        let grass = this.grassModel.clone('grass');
+        this.addGroundMesh(grass, parent);
+        return grass;
+    }
+
+    addBush(parent: TransformNode): Mesh {
+        // let bush = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
+        let bush = this.bushModel.clone('bush');
+        this.addGroundMesh(bush, parent);
+        return bush;
+    }
+
+    addGroundMesh(mesh: Mesh, parent: TransformNode) {
+        let children = mesh.getChildren();
+        for (let i = 0; i < children.length; i++) {
+            const child: Mesh = children[i];
+            child.isVisible = true;
+            this.system.shadowGenerator.addShadowCaster(child);
+            child.alwaysSelectAsActiveMesh = true;
+            child.doNotSyncBoundingInfo = true;
+        }
+        let randomPos = this.getPositionAround();
+        mesh.position.x = randomPos.x;
+        mesh.position.z = randomPos.y;
+        mesh.parent = parent;
+    }
+
+    getPositionAround(): Vector2 {
+        return new Vector2((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5);
     }
 
     getRandomPosition(ratio: number): Vector2 {
@@ -266,7 +332,7 @@ export class Ground {
     sensitivity = 1;
     sensitivityRatio = 20;
     realSensitivity = 1;
-    setEvents(mouseCatcher: MouseCatcher, responsiveCatcher: ResponsiveCatcher) {
+    setEvents(mouseCatcher: MouseCatcher) {
         mouseCatcher.addListener((mousepos: Vector2) => {
             if (this.sensitivity != 0) {
                 let newrot = new Vector2(mousepos.y / 5, mousepos.x / 5);
@@ -274,7 +340,7 @@ export class Ground {
             }
         });
 
-        responsiveCatcher.addListener((ratio) => {
+        this.system.on("resize", (ratio) => {
             this.checkSensitivity(ratio);
         });
     }

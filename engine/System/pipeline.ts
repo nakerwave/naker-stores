@@ -1,5 +1,3 @@
-import { ResponsiveCatcher } from '@naker/services/Catchers/responsiveCatcher';
-
 import { System } from './system';
 
 import { Camera } from '@babylonjs/core/Cameras/camera';
@@ -62,11 +60,6 @@ export class Pipeline {
     /**
     * @ignore
     */
-    _responsiveCatcher: ResponsiveCatcher;
-
-    /**
-    * @ignore
-    */
     defaultPipeline: DefaultRenderingPipeline;
 
     /**
@@ -83,14 +76,13 @@ export class Pipeline {
     * @param system System of the 3D scene
     * @param responsive Responsive to manage vignette depending on screen ratio
     */
-    constructor(system: System, responsiveCatcher: ResponsiveCatcher) {
+    constructor(system: System) {
         this._system = system;
-        this._responsiveCatcher = responsiveCatcher;
         this.cameras = [ system.camera ];
         this.pipelineEase = new CircleEase();
 
         this.initPipeline();
-        this.setEvents(responsiveCatcher);
+        this.setEvents();
     }
 
     initPipeline() {
@@ -99,7 +91,9 @@ export class Pipeline {
         this.defaultPipeline.fxaaEnabled = true;
 
         // this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Medium;
-        this.defaultPipeline.depthOfField.fStop = 3;
+        this.defaultPipeline.depthOfField.fStop = 2;
+        console.log(this.defaultPipeline.depthOfField);
+        
         this.defaultPipeline.depthOfField.focalLength = 500;
 
         this.defaultPipeline.bloomKernel = 20;
@@ -130,8 +124,8 @@ export class Pipeline {
         imageProcessingConfiguration.applyByPostProcess = false;
     }
 
-    setEvents(responsiveCatcher: ResponsiveCatcher) {
-        responsiveCatcher.addListener((ratio, width, height, scale) => {
+    setEvents() {
+        this._system.on("resize", (ratio, width, height, scale) => {
             this.checkVignetteWigthRatio(ratio);
             this.checkKernel(width, height);
         });
@@ -384,7 +378,6 @@ export class Pipeline {
         if (focalLength) {
             this.defaultPipeline.depthOfFieldEnabled = true;
             this.defaultPipeline.depthOfField.focalLength = focalLength;
-            this.defaultPipeline.depthOfField.fStop = 4;
         } else {
             this.defaultPipeline.depthOfFieldEnabled = false;
         }
@@ -453,8 +446,8 @@ export class Pipeline {
     */
     setVignetteOffset(offset: number) {
         this.defaultValues.vignetteOffset = offset;
-        this.checkVignetteWigthRatio(this._responsiveCatcher.containerRatio);
-        let ratio = Math.max(Math.min(this._responsiveCatcher.containerRatio, offset), -offset);
+        this.checkVignetteWigthRatio(this._system.containerRatio);
+        let ratio = Math.max(Math.min(this._system.containerRatio, offset), -offset);
         if (ratio >= 0) {
             this.imageProcessingConfiguration.vignetteCentreX = ratio / 1.2;
             this.imageProcessingConfiguration.vignetteCentreY = 0;

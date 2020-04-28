@@ -1,4 +1,4 @@
-import { SystemAnimation } from '@naker/services/System/systemAnimation';
+import { SystemQuality } from '@naker/services/System/systemQuality';
 
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { Color3, Color4, Vector3, Vector2 } from '@babylonjs/core/Maths/math';
@@ -19,21 +19,18 @@ import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator'
  * The system is really important as it is often sent in every other class created to manage core assets
  */
 
-export class System extends SystemAnimation {
+export class System extends SystemQuality {
   
     /**
      * Creates a new System
      * @param canvas Element where the scene will be drawn
      */
     constructor(canvas: HTMLCanvasElement) {
-        super(canvas)
-
+        super(canvas);
+        
         this.paramScene();
         this.addLight();
-
-        window.addEventListener('resize', () => {
-            this.engine.resize();
-        });
+        this.setHorizontalFixed(true);
     }
 
     paramScene() {
@@ -62,16 +59,15 @@ export class System extends SystemAnimation {
         // this.light.position = new Vector3(-40, 100, -40);
         this.light.intensity = 10000;
         this.light.autoUpdateExtends = false;
-        console.log(this.light);
         
         this.scene.shadowsEnabled = true;
-        
-        this.shadowGenerator = new ShadowGenerator(8192, this.light);
+        let shadowQuality = 2;
+        let shadowRatio = Math.pow(2, shadowQuality);
+        this.shadowGenerator = new ShadowGenerator(1024 * shadowRatio, this.light);
         this.shadowGenerator.useBlurExponentialShadowMap = true;
         this.shadowGenerator.useKernelBlur = true;
-        this.shadowGenerator.blurKernel = 32;
+        this.shadowGenerator.blurKernel = 64 / shadowRatio;
         this.shadowGenerator.getShadowMap().refreshRate = RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
-        console.log(this.shadowGenerator);
     }
 
     updateShadows() {

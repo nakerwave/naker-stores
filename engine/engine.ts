@@ -6,7 +6,6 @@ import { ModalUI } from './Ui/modal';
 import { Pipeline } from './System/pipeline';
 
 import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
-import { ResponsiveCatcher } from '@naker/services/Catchers/responsiveCatcher';
 import { TouchCatcher } from '@naker/services/Catchers/touchCatcher';
 import { setStyle } from 'redom';
 
@@ -15,10 +14,11 @@ import { setStyle } from 'redom';
 // Améliorer route texture
 // Temps de trajet pour aller au magasins
 // Texture meilleure
-// Voir pour l'ombre
-// Plus d'éléments que les arbres
-// Rotation voiture
-// Voir améliorer vignette
+// Rotation voiture, grossir et mettre dans bon sens
+// Raccourcir phrase d'intro
+// Voir problème pain
+// Faire en sorte que la scène soit plus clair, plus vive
+// Tester converttoflatshadedmesh
 
 export interface GameInterface {
     canvas?: HTMLCanvasElement,
@@ -29,7 +29,6 @@ export class GameEngine {
     system: UiSystem;
     touchCatcher: TouchCatcher;
     mouseCatcher: MouseCatcher;
-    responsiveCatcher: ResponsiveCatcher;
 
     ground: Ground;
     searchInput: SearchUI;
@@ -45,8 +44,7 @@ export class GameEngine {
         this.touchCatcher = new TouchCatcher(window);
         this.mouseCatcher = new MouseCatcher(this.system, this.touchCatcher);
         this.mouseCatcher.start();
-        this.responsiveCatcher = new ResponsiveCatcher(this.system, true);
-        this.pipeline = new Pipeline(this.system, this.responsiveCatcher);
+        this.pipeline = new Pipeline(this.system);
         
         // setInterval(() => {
         //     this.pipeline.defaultPipeline.depthOfField.focusDistance += 1000;
@@ -56,9 +54,9 @@ export class GameEngine {
         this.pipeline.setFocalLength(10000);
         // Value for orthographic camera
         // this.pipeline.setFocalDistance(-1);
-        this.pipeline.setFocalDistance(100);
+        this.pipeline.setFocalDistance(90);
         this.pipeline.addCamera(this.system.camera);
-        this.pipeline.setVignette([0, 0, 0, 0.1]);
+        this.pipeline.setVignette([0, 0, 0, 0.08]);
         
         this.modal = new ModalUI();
         this.searchInput = new SearchUI(this.modal);
@@ -66,7 +64,7 @@ export class GameEngine {
             this.storeMap.updateStores(latlng);
         };
         
-        this.ground = new Ground(this.system, this.mouseCatcher, this.responsiveCatcher);
+        this.ground = new Ground(this.system, this.mouseCatcher);
         this.storeMap = new StoreMap(this.system, this.ground, this.modal);
 
         // setTimeout(() => {

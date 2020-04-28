@@ -35,36 +35,30 @@ export class StoreMap {
     }
 
     center = Vector2.Zero();
+    storesNearby: Array<any> = [];
     updateStores(latlng: Array<number>) {
         // this.center = this.ground.getRandomPosition(0.5);
-        
-        this.ground.animFog(() => {
-            this.showStoresOnMap(latlng);
+        let storesNearby = this.getStoresInBox(latlng);
+        this.storesNearby = this.setStorePositionInGrid(storesNearby);
+        this.ground.newDecor(this.gridSpot, () => {
+            this.addStoresModels(this.storesNearby);
         });
         this.hideCurrentStores();
     }
 
     hideCurrentStores() {
-        this.house.hideAnim();
         for (let i = 0; i < this.storeModels.length; i++) {
             const storeModel = this.storeModels[i];
             storeModel.hideAnim();
         }
     }
 
-    storesNearby: Array<any> = [];
-    showStoresOnMap(latlng: Array<number>) {
-        let storesNearby = this.getStoresInBox(latlng);
-        this.storesNearby = this.setStorePositionInGrid(storesNearby);
-        this.addStoresModels(this.storesNearby);
-    }
-
-    gridSpot: Array<Array<any>>;
+    gridSpot: Array<Array<string>>;
     spotWidthNumber = 20;
     setStorePositionInGrid(storesNearby: Array<StoreData>): Array<StoreData> {
         this.gridSpot = Array(this.spotWidthNumber).fill().map(() => Array(this.spotWidthNumber).fill());
         // Do not put store where the house is
-        this.gridSpot[this.spotWidthNumber/2][this.spotWidthNumber/2] = 1;
+        this.gridSpot[this.spotWidthNumber/2][this.spotWidthNumber/2] = 'house';
         for (let i = 0; i < storesNearby.length; i++) {
             const store = storesNearby[i];
             store.position = this.getStoreSpot(store);
@@ -126,8 +120,6 @@ export class StoreMap {
 
     storeModels: Array<Store> = [];
     addStoresModels(stores: Array<StoreData>) {
-        this.house.setPosition(this.center);
-        this.house.showAnim();
         let j = 0;
         for (let i = 0; i < stores.length; i++) {
             let newStore = new Store(this.system, this.modal, this.car);
