@@ -18,20 +18,6 @@ export class MeshEntity extends PositionEntity {
         this.showCurve.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
     }
 
-    loadModel(name: string, modelFile: string, callback?: Function) {
-        this.system.loadModel(modelFile, (model) => {
-            for (let i = 0; i < model.length; i++) {
-                const mesh = model[i];
-                mesh.parent = this.mesh;
-                // mesh.receiveShadow = true;
-                mesh.alwaysSelectAsActiveMesh = true;
-                mesh.doNotSyncBoundingInfo = true;
-                this.system.shadowGenerator.addShadowCaster(mesh);
-            }
-            if (callback) callback(model);
-        });
-    }
-
     mesh: TransformNode;
     setSize(size: number) {
         this._setSize(size);

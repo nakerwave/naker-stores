@@ -5,6 +5,7 @@ import { StoreMap } from './Map/storeMap';
 import { ModalUI } from './Ui/modal';
 import { Pipeline } from './System/pipeline';
 import { House } from './Entity/house';
+import { Car } from './Map/car';
 
 import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
 import { TouchCatcher } from '@naker/services/Catchers/touchCatcher';
@@ -14,7 +15,6 @@ import { setStyle } from 'redom';
 // Ajouter flèche sur les côtés
 // Améliorer route texture
 // Temps de trajet pour aller au magasins
-// Texture meilleure
 // Rotation voiture, grossir et mettre dans bon sens
 // Voir problème pain
 // Faire en sorte que la scène soit plus clair, plus vive
@@ -42,6 +42,7 @@ export class GameEngine {
     storeMap: StoreMap;
     pipeline: Pipeline;
     house: House;
+    car: Car;
 
     constructor(gameOptions: GameInterface) {
         this.system = new UiSystem(gameOptions.canvas);
@@ -66,8 +67,11 @@ export class GameEngine {
             this.storeMap.updateStores(latlng);
         };
         
+        this.house = new House(this.system);
+        this.car = new Car(this.system);
+
         this.ground = new Ground(this.system, this.mouseCatcher);
-        this.storeMap = new StoreMap(this.system, this.ground, this.modal);
+        this.storeMap = new StoreMap(this.system, this.ground, this.car, this.modal);
 
         setTimeout(() => {
             this.storeMap.updateStores([-1.414176, 48.680365]);
@@ -79,10 +83,10 @@ export class GameEngine {
         // this.system.camera.attachControl(gameOptions.canvas);
  
         this.system.updateShadows();
-        this.house = new House(this.system);
         this.system.launchRender();
         this.system.setSky(() => {
             this.ground.loadDecor();
+            this.car.showAnim();
             this.house.showAnim(() => {
                 this.system.updateShadows();
             });

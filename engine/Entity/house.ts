@@ -1,12 +1,12 @@
 import { UiSystem } from '../System/uiSystem';
-import { MeshEntity } from './meshEntity';
+import { ModelEntity } from './modelEntity';
 
 import { Vector2 } from '@babylonjs/core/Maths/math';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 
-export class House extends MeshEntity {
+export class House extends ModelEntity {
 
     color?: Array<number>;
     system: UiSystem;
@@ -26,11 +26,9 @@ export class House extends MeshEntity {
     }
     
     addModel() {
-        this.loadModel('house', 'maison.glb', (model) => {
-            for (let i = 0; i < model.length; i++) {
-                const mesh = model[i];
-                mesh.rotation.y = Math.PI;
-            }
+        this.loadModel('maison.glb', (model) => {
+            this.setRotation(Math.PI);
+            this.hide();
         });
     }
 

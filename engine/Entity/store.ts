@@ -1,6 +1,6 @@
 import { UiSystem } from '../System/uiSystem';
 import { ModalUI } from '../Ui/modal';
-import { MeshEntity } from './meshEntity';
+import { ModelEntity } from './modelEntity';
 
 import { Color3, Vector2, Vector3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
@@ -84,7 +84,7 @@ export let storeList: Array < StoreInterface > = [
     },
 ];
 
-export class Store extends MeshEntity {
+export class Store extends ModelEntity {
 
     color?: Array<number>;
     system: UiSystem;
@@ -121,7 +121,7 @@ export class Store extends MeshEntity {
     commerceModel: Array<Mesh>;
     addMesh() {
         this.mesh = new TransformNode(this.key, this.system.scene);
-        this.loadModel('base', 'Commerce.glb', (model) => {
+        this.loadModel('Commerce.glb', (model) => {
             this.commerceModel = model;
             setTimeout(() => {
                 let storeType = find(storeList, (s) => { return this.type.indexOf(s.type) != -1 });
@@ -157,7 +157,7 @@ export class Store extends MeshEntity {
         this.on('leave', () => {
             this.stopRotateAnimation();
             this.hideLabel();
-            this.car.hide();
+            this.car.backToHome();
         });
     }
 
@@ -205,7 +205,7 @@ export class Store extends MeshEntity {
         this.setLabelText(name);
         let storeType = find(storeList, (s) => { return type.indexOf(s.type) != -1 });
         if (!storeType) return console.log(type);
-        this.loadModel(storeType.name, storeType.model, (storeModel) =>{
+        this.loadModel(storeType.model, (storeModel) =>{
             this.storeModel = storeModel;
             for (let i = 0; i < storeModel.length; i++) {
                 const mesh = storeModel[i];

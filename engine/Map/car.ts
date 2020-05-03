@@ -2,7 +2,8 @@ import { Animation } from '@naker/services/System/systemAnimation';
 
 import { MeshSystem } from '../System/meshSystem';
 import { point2D } from '../System/interface';
-import { MeshEntity } from '../Entity/meshEntity';
+import { ModelEntity } from '../Entity/modelEntity';
+import { Mesh } from '@babylonjs/core/Meshes/mesh';
 
 import { Vector2 } from '@babylonjs/core/Maths/math';
 import { EasingFunction, CubicEase, } from '@babylonjs/core/Animations/easing';
@@ -17,7 +18,7 @@ export interface PositionEntityInterface {
 export let houseDoorWayVector = new Vector2(4, 0);
 export let storeDoorWayVector = new Vector2(0, -4);
 
-export class Car extends MeshEntity {
+export class Car extends ModelEntity {
 
     curve: EasingFunction;
     animation: Animation;
@@ -29,7 +30,7 @@ export class Car extends MeshEntity {
         this.curve.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
 
         this.addMesh();
-        this.setSize(1);
+        this.setSize(1.2);
         this.hide();
         this.addModel();
         this.setPosition(houseDoorWayVector);
@@ -42,13 +43,13 @@ export class Car extends MeshEntity {
     }
 
     addModel() {
-        this.loadModel('car', 'Voiture2.glb', (model) => {
+        this.loadModel('Voiture2.glb', (model) => {
             for (let i = 0; i < model.length; i++) {
                 const mesh = model[i];
                 mesh.rotation.z = -Math.PI / 2;
-                mesh.position.y = 1;
             }
-            this.showAnim();
+            // this.setRotation(-Math.PI / 2);
+            this.hide();
         });
     }
 
@@ -68,7 +69,7 @@ export class Car extends MeshEntity {
         });
     }
 
-    hide() {
+    backToHome() {
         if (!this.destination) return;
         let change = this.destination.subtract(houseDoorWayVector);
         this.animation.simple(this.animLength, (count, perc) => {
@@ -83,8 +84,10 @@ export class Car extends MeshEntity {
         });
     }
 
-    setPosition(destination: Vector2) {
-        this.mesh.position.x = destination.x;
-        this.mesh.position.z = destination.y;
+    setPosition(pos: Vector2) {
+        this._setPosition(pos);
+        this.mesh.position.x = pos.x;
+        this.mesh.position.z = pos.y;
+        this.mesh.position.y = 0.8;
     }
 }

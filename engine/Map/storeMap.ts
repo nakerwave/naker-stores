@@ -23,11 +23,11 @@ export class StoreMap {
     modal: ModalUI;
     car: Car;
 
-    constructor(system: UiSystem, ground: Ground, modal: ModalUI) {
+    constructor(system: UiSystem, ground: Ground, car: Car, modal: ModalUI) {
         this.system = system;
         this.ground = ground;
         this.modal = modal;
-        this.car = new Car(system);
+        this.car = car;
     }
 
     center = Vector2.Zero();

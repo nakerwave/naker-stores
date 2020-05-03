@@ -32,7 +32,7 @@ export class Road {
         let path: Array<Vector3> = [];
 
         // Random height so that there is no conflict between several roads
-        let roadHeight = Math.random() / 5 + 0.1;
+        let roadHeight = Math.random() / 10 + 0.1;
         for (let i = 0; i < points.length; i++) {
             path[i] = new Vector3(points[i].x, roadHeight, points[i].y);
         }
