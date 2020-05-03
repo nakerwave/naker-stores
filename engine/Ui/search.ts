@@ -29,7 +29,7 @@ export class SearchUI {
     addSearchBar() {
         this.form = el('form.form', { autocomplete: "off", onsubmit: (evt) => { evt.preventDefault(); } },
             [
-                el('h1', 'Entrer votre adresse et trouvez des producteurs à côté de chez vous!'),
+                el('h1', 'Trouvez des producteurs proches de chez vous!'),
                 this.searchInput = el('input.project-name', {
                     type: 'text',
                     placeholder: "Mon adresse",

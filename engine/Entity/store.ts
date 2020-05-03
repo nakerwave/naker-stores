@@ -14,6 +14,7 @@ import find from 'lodash/find';
 import { ui_text, ui_image } from '../Ui/node';
 import { Car, houseDoorWayVector, storeDoorWayVector } from '../Map/car';
 import { Road } from '../Map/road';
+import { RoadCylinder } from '../Map/roadCylinder';
 
 import pancarteUrl from '../../asset/pancarte4.png';
 
@@ -187,12 +188,12 @@ export class Store extends MeshEntity {
     roadStopScale = new Vector2(1.1, 1);
     road: Road;
     addRoad(pos: Vector2) {
-        let car = [
+        let path = [
             houseDoorWayVector,
             new Vector2(houseDoorWayVector.x, pos.y + storeDoorWayVector.y),
             new Vector2(pos.x, pos.y + storeDoorWayVector.y).multiply(this.roadStopScale),
         ];
-        this.road = new Road(car, this.system.scene);
+        this.road = new Road(path, this.system);
     }
 
     type: string;

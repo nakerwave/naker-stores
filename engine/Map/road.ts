@@ -1,11 +1,12 @@
+import { MeshSystem } from '../System/meshSystem';
+
 import { Vector3, Vector2, Color3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
-import { Scene } from '@babylonjs/core/scene'
 import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 
-import roadTexture from '../../asset/road5.jpg';
+import roadTexture from '../../asset/road9.jpg';
 
 // var road = new Road({ path: path, width: 1, closed: true, standardUV: false }, scene);
 
@@ -20,7 +21,7 @@ export class Road {
 
     mesh: Mesh;
 
-    constructor(points: Array<Vector2>, scene: Scene) {
+    constructor(points: Array<Vector2>, system: MeshSystem) {
 
         //Arrays for vertex positions and indices
         var positions = [];
@@ -29,8 +30,11 @@ export class Road {
 
         var width = 1;
         let path: Array<Vector3> = [];
+
+        // Random height so that there is no conflict between several roads
+        let roadHeight = Math.random() / 5 + 0.1;
         for (let i = 0; i < points.length; i++) {
-            path[i] = new Vector3(points[i].x, 0.2, points[i].y);
+            path[i] = new Vector3(points[i].x, roadHeight, points[i].y);
         }
         var closed = false;
         let standardUV = false;
@@ -170,7 +174,7 @@ export class Road {
         VertexData.ComputeNormals(positions, indices, normals);
         VertexData._ComputeSides(Mesh.DOUBLESIDE, positions, indices, normals, uvs);
         //Create a custom mesh  
-        this.mesh = new Mesh("custom", scene);
+        this.mesh = new Mesh("custom", system.scene);
 
         //Create a vertexData object
         var vertexData = new VertexData();
@@ -184,12 +188,13 @@ export class Road {
         //Apply vertexData to custom mesh
         vertexData.applyToMesh(this.mesh);
 
-        this.mesh.material = new PBRMaterial("roadMaterial", scene);
-        this.mesh.material.roughness = 1;
-        this.mesh.material.metallic = 0;
-        this.mesh.material.albedoTexture = new Texture(roadTexture, scene);
-        // this.mesh.material.albedoColor = new Color3(1, 1, 0);
-        // this.mesh.material.emissiveColor = new Color3(0.1, 0.1, 0.1);
+        let material = new PBRMaterial("roadMaterial", system.scene);
+        material.roughness = 1;
+        material.metallic = 0;
+        material.albedoColor = new Color3(1, 1, 0.3);
+        // material.emissiveColor = new Color3(0.5, 0.5, 0);
+        // material.albedoTexture = new Texture(roadTexture, system.scene);
+        this.mesh.material = material;
     }
 
     dispose() {

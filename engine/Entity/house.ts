@@ -31,9 +31,6 @@ export class House extends MeshEntity {
                 const mesh = model[i];
                 mesh.rotation.y = Math.PI;
             }
-            this.showAnim(() => {
-                this.system.updateShadows();
-            });
         });
     }
 

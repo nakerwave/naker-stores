@@ -1,6 +1,5 @@
 import { UiSystem } from '../System/uiSystem';
 import { Store, StoreData } from '../Entity/store';
-import { House } from '../Entity/house';
 import { Car } from './car';
 import { Ground } from './Ground';
 import { ModalUI } from '../Ui/modal';
@@ -20,7 +19,6 @@ export class StoreMap {
 
     system: UiSystem;
     curve: EasingFunction;
-    house: House;
     ground: Ground;
     modal: ModalUI;
     car: Car;
@@ -30,8 +28,6 @@ export class StoreMap {
         this.ground = ground;
         this.modal = modal;
         this.car = new Car(system);
-
-        this.house = new House(this.system);
     }
 
     center = Vector2.Zero();
@@ -126,12 +122,16 @@ export class StoreMap {
             let store = stores[i];
             newStore.setData(store);
             this.storeModels.push(newStore);
-            setTimeout(() => {
-                this.storeModels[j].showAnim();
-                this.system.checkActiveMeshes();
-                j++;
-                if (j == this.maxStores) this.system.updateShadows();
-            }, i * 200);
+            // Removed timeout to avoid stop rendering wich create lag
+            // setTimeout(() => {
+            this.storeModels[i].showAnim();
+            // j++;
+            // if (j == this.maxStores) this.system.updateShadows();
+            // }, i * 200);
         }
+        this.system.checkActiveMeshes();
+        setTimeout(() => {
+            this.system.updateShadows();
+        }, 2000);
     }
 }

@@ -10,6 +10,7 @@ import { Color4 } from '@babylonjs/core/Maths/math';
 import { EasingFunction, CircleEase } from '@babylonjs/core/Animations/easing';
 import { DepthOfFieldEffectBlurLevel } from '@babylonjs/core/PostProcesses/depthOfFieldEffect';
 import clone from 'lodash/clone';
+import { EventsName } from '@naker/services/Tools/observable';
 
 export interface pipelineOptions {
     fieldOfView?: number,
@@ -91,7 +92,7 @@ export class Pipeline {
         this.defaultPipeline.fxaaEnabled = true;
 
         // this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Medium;
-        this.defaultPipeline.depthOfField.fStop = 2;
+        this.defaultPipeline.depthOfField.fStop = 3;
         console.log(this.defaultPipeline.depthOfField);
         
         this.defaultPipeline.depthOfField.focalLength = 500;
@@ -125,22 +126,21 @@ export class Pipeline {
     }
 
     setEvents() {
-        this._system.on("resize", (ratio, width, height, scale) => {
-            this.checkVignetteWigthRatio(ratio);
-            this.checkKernel(width, height);
-        });
+        this._system.on(EventsName.Resize, () => {
+            this.checkDepthOfFieldKernel();
+        }, null, true);
 
-        this._system.on("start", () => {
+        this._system.on(EventsName.Start, () => {
             this.defaultPipeline.samples = 1;
-            // this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Low;
-            // this._setDepthOfFieldKernel(this.kernel);
-        });
+            this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Low;
+            this._setDepthOfFieldKernel(this.kernel);
+        }, null, true);
 
-        this._system.on("stop", () => {
+        this._system.on(EventsName.Stop, () => {
             this.defaultPipeline.samples = 4;
-            // this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Medium;
-            // this._setDepthOfFieldKernel(this.kernel);
-        });
+            this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Medium;
+            this._setDepthOfFieldKernel(this.kernel/2);
+        }, null, true);
     }
 
     /**
@@ -246,8 +246,8 @@ export class Pipeline {
 
     // Adapt blur kernel so that it stays constant whatever the support
     kernel = 20;
-    checkKernel(width: number, height: number) {
-        let newKernel = (width + height) / 100;
+    checkDepthOfFieldKernel() {
+        let newKernel = (this._system.renderWidth + this._system.renderHeight) / 100;
         this.setDepthOfFieldKernel(newKernel);
     }
 

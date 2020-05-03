@@ -14,6 +14,7 @@ import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 
 import grassAlbedoTexture from '../../asset/grass1.png';
 import grassNormalTexture from '../../asset/grassnorm1.png';
+import { EventsName } from '@naker/services/Tools/observable';
 
 /**
  * Manage all the essential assets needed to build a 3D scene (Engine, Scene Cameras, etc)
@@ -47,7 +48,6 @@ export class Ground {
         this.system.scene.fogColor = new Color3(0.3, 0.6, 0.3);
 
         this.addGround();
-        this.loadDecor();
         this.setEvents(mouseCatcher);
         this.setCameraRotation(Vector2.Zero());
 
@@ -66,7 +66,7 @@ export class Ground {
     addGround() {
         // var sideO = Mesh.BACKSIDE;
         // this.ground = Mesh.Createground("ground", this.paths, false, false, 0, this.system.scene, true, sideO);
-        this.ground = Mesh.CreatePlane("ground", mapSize * 2, this.system.scene);
+        this.ground = Mesh.CreatePlane("ground", mapSize * 20, this.system.scene);
         // this.ground.alwaysSelectAsActiveMesh = true;
         // this.ground.doNotSyncBoundingInfo = true;
         this.ground.receiveShadows = true;
@@ -340,7 +340,7 @@ export class Ground {
             }
         });
 
-        this.system.on("resize", (ratio) => {
+        this.system.on(EventsName.Resize, (ratio) => {
             this.checkSensitivity(ratio);
         });
     }
