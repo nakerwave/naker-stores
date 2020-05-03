@@ -101,9 +101,7 @@ export class EnvironmentSystem extends System {
         this.sceneTexture = new CubeTexture(envUrl, this.scene, null, false, null, () => {
             // this.sceneTexture.gammaSpace = false;
             this.scene.environmentTexture = this.sceneTexture;
-            console.log(this.scene.environmentTexture);
-            
-            this.scene.environmentTexture.level = 0.00001;
+            // this.scene.environmentTexture.level = 0.00001;
             // this.skyboxMaterial.reflectionTexture = this.sceneTexture.clone();
             // this.skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
             // this.groundMaterial.reflectionTexture = this.sceneTexture.clone();

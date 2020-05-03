@@ -61,8 +61,15 @@ export class Car extends ModelEntity {
         this.animation.simple(this.animLength, (count, perc) => {
             let easePerc = this.curve.ease(perc);
             let progress: Vector2;
-            if (easePerc < 0.5) progress = change.multiply(new Vector2(0, easePerc * 2));
-            else progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
+            if (easePerc < 0.5) {
+                progress = change.multiply(new Vector2(0, easePerc * 2));
+                if (destination.y > 0) this.setRotation(0);
+                else this.setRotation(Math.PI);
+            } else {
+                if (destination.x > 0) this.setRotation(Math.PI / 2);
+                else this.setRotation(-Math.PI/2);
+                progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
+            }
             let pos = houseDoorWayVector.add(progress);
             this.destination = pos;
             this.setPosition(pos);
@@ -75,8 +82,15 @@ export class Car extends ModelEntity {
         this.animation.simple(this.animLength, (count, perc) => {
             let easePerc = 1 - this.curve.ease(perc);
             let progress: Vector2;
-            if (easePerc < 0.5) progress = change.multiply(new Vector2(0, easePerc * 2));
-            else progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
+            if (easePerc > 0.5) {
+                progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
+                if (change.x > 0) this.setRotation(-Math.PI / 2);
+                else this.setRotation(Math.PI / 2);
+            } else {
+                progress = change.multiply(new Vector2(0, easePerc * 2));
+                if (change.y > 0) this.setRotation(Math.PI);
+                else this.setRotation(0);
+            }
             let pos = houseDoorWayVector.add(progress);
             this.setPosition(pos);
         }, () => {
