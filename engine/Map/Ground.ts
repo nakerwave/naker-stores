@@ -1,7 +1,9 @@
 import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
 import { Animation } from '@naker/services/System/systemAnimation';
+import { EventsName } from '@naker/services/Tools/observable';
 
 import { MeshSystem } from '../System/meshSystem';
+import { TileMap } from './tileMap';
 
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Vector2, Vector3, Color3 } from '@babylonjs/core/Maths/math';
@@ -14,7 +16,6 @@ import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 
 import grassAlbedoTexture from '../../asset/grass1.png';
 import grassNormalTexture from '../../asset/grassnorm1.png';
-import { EventsName } from '@naker/services/Tools/observable';
 
 /**
  * Manage all the essential assets needed to build a 3D scene (Engine, Scene Cameras, etc)
@@ -31,9 +32,11 @@ export class Ground {
     cameraZoom: EasingFunction;
     animation: Animation;
     fogAnimation: Animation;
+    tileMap: TileMap;
 
-    constructor(system: MeshSystem, mouseCatcher: MouseCatcher) {
+    constructor(system: MeshSystem, tileMap: TileMap, mouseCatcher: MouseCatcher) {
         this.system = system;
+        this.tileMap = tileMap;
         this.animation = new Animation(this.system);
         this.fogAnimation = new Animation(this.system);
 
@@ -85,7 +88,6 @@ export class Ground {
         this.groundMaterial.roughness = 1;
         this.groundMaterial.metallic = 0.2;
         this.groundMaterial.albedoColor = new Color3(1 / 255, 255 / 255, 56 / 255);
-
         // this.groundMaterial = new StandardMaterial("groundMaterial", this.system.scene);
         // this.groundMaterial.diffuseColor = new Color3(1 / 255, 255 / 255, 56 / 255);
     }
@@ -129,6 +131,8 @@ export class Ground {
 
             this.addAllTreeGroup();
             this.system.updateShadows();
+            this.tileMap.resetGridSpot();
+            this.moveTreeGroup();
         });
     }
 
@@ -194,10 +198,23 @@ export class Ground {
         this.cameraMoving = false;
     }
 
-    newDecor(gridSpot: Array<Array<string>>, callback: Function) {
+    newDecor(callback: Function) {
         this.animFog(() => {
-
+            this.moveTreeGroup();
         }, callback);
+    }
+
+    treeDistance = 100;
+    moveTreeGroup() {
+        for (let i = 0; i < this.treeGroups.length; i++) {
+            const treeGroup = this.treeGroups[i];
+            let randomX = Math.random() * this.treeDistance - this.treeDistance/2;
+            let randomY = Math.random() * this.treeDistance - this.treeDistance/2;
+            let pos = this.tileMap.getFreeSpot(new Vector2(randomX, randomY));
+            treeGroup.position.x = pos.x;
+            treeGroup.position.z = pos.y;
+        }
+        this.system.updateShadows();
     }
 
     spotWidthNumber = 20;

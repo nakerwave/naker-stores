@@ -10,12 +10,12 @@ import { Car } from './Map/car';
 import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
 import { TouchCatcher } from '@naker/services/Catchers/touchCatcher';
 import { setStyle } from 'redom';
+import { TileMap } from './Map/tileMap';
 
 // Nord-Sud pas bon avec l'itinéraire
 // Ajouter flèche sur les côtés
 // Améliorer route texture
 // Temps de trajet pour aller au magasins
-// Rotation voiture, grossir et mettre dans bon sens
 // Voir problème pain
 // Faire en sorte que la scène soit plus clair, plus vive
 // Tester converttoflatshadedmesh
@@ -37,6 +37,7 @@ export class GameEngine {
     mouseCatcher: MouseCatcher;
 
     ground: Ground;
+    tileMap: TileMap;
     searchInput: SearchUI;
     modal: ModalUI;
     storeMap: StoreMap;
@@ -70,8 +71,9 @@ export class GameEngine {
         this.house = new House(this.system);
         this.car = new Car(this.system);
 
-        this.ground = new Ground(this.system, this.mouseCatcher);
-        this.storeMap = new StoreMap(this.system, this.ground, this.car, this.modal);
+        this.tileMap = new TileMap();
+        this.ground = new Ground(this.system, this.tileMap, this.mouseCatcher);
+        this.storeMap = new StoreMap(this.system, this.tileMap, this.ground, this.car, this.modal);
 
         setTimeout(() => {
             this.storeMap.updateStores([-1.414176, 48.680365]);

@@ -3,8 +3,8 @@ import { Store, StoreData } from '../Entity/store';
 import { Car } from './car';
 import { Ground } from './Ground';
 import { ModalUI } from '../Ui/modal';
+import { TileMap } from './tileMap';
 
-import { EasingFunction } from '@babylonjs/core/Animations/easing';
 import { Vector2 } from '@babylonjs/core/Maths/math';
 
 import stores from '../../asset/stores.json';
@@ -18,15 +18,16 @@ import stores from '../../asset/stores.json';
 export class StoreMap {
 
     system: UiSystem;
-    curve: EasingFunction;
     ground: Ground;
+    tileMap: TileMap;
     modal: ModalUI;
     car: Car;
 
-    constructor(system: UiSystem, ground: Ground, car: Car, modal: ModalUI) {
+    constructor(system: UiSystem, tileMap: TileMap, ground: Ground, car: Car, modal: ModalUI) {
         this.system = system;
         this.ground = ground;
         this.modal = modal;
+        this.tileMap = tileMap;
         this.car = car;
     }
 
@@ -35,8 +36,9 @@ export class StoreMap {
     updateStores(latlng: Array<number>) {
         // this.center = this.ground.getRandomPosition(0.5);
         let storesNearby = this.getStoresInBox(latlng);
+        this.tileMap.resetGridSpot();
         this.storesNearby = this.setStorePositionInGrid(storesNearby);
-        this.ground.newDecor(this.gridSpot, () => {
+        this.ground.newDecor(() => {
             this.addStoresModels(this.storesNearby);
         });
         this.hideCurrentStores();
@@ -49,37 +51,13 @@ export class StoreMap {
         }
     }
 
-    gridSpot: Array<Array<string>>;
     spotWidthNumber = 20;
     setStorePositionInGrid(storesNearby: Array<StoreData>): Array<StoreData> {
-        this.gridSpot = Array(this.spotWidthNumber).fill().map(() => Array(this.spotWidthNumber).fill());
-        // Do not put store where the house is
-        this.gridSpot[this.spotWidthNumber/2][this.spotWidthNumber/2] = 'house';
         for (let i = 0; i < storesNearby.length; i++) {
             const store = storesNearby[i];
-            store.position = this.getStoreSpot(store);
+            store.position = this.tileMap.getFreeSpot(store.position);
         }
-        // console.log(storesNearby);
         return storesNearby;
-    }
-
-    spotWidth = 10;
-    getStoreSpot(store) {
-        let pos = store.position;
-        let roundPos = { x: Math.round(pos.x / this.spotWidth), y: Math.round(pos.y / this.spotWidth) };
-       
-        let offset = this.spotWidthNumber / 2;
-        let gridPos = { x: roundPos.x + offset, y: roundPos.y + offset };
-        
-        while (this.gridSpot[gridPos.x][gridPos.y]) {
-            gridPos.x += Math.round((Math.random() - 0.5) * 2);
-            gridPos.y += Math.round((Math.random() - 0.5) * 2);
-        }
-        this.gridSpot[gridPos.x][gridPos.y] = store.name;
-
-        pos.x = (gridPos.x - offset) * this.spotWidth;
-        pos.y = (gridPos.y - offset) * this.spotWidth;
-        return pos;
     }
 
     maxStores = 20;

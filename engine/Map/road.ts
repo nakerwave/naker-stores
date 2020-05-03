@@ -175,6 +175,7 @@ export class Road {
         VertexData._ComputeSides(Mesh.DOUBLESIDE, positions, indices, normals, uvs);
         //Create a custom mesh  
         this.mesh = new Mesh("custom", system.scene);
+        this.mesh.receiveShadows = true;
 
         //Create a vertexData object
         var vertexData = new VertexData();
