@@ -26,7 +26,7 @@ export class MeshEntity extends PositionEntity {
     scaleMesh(scale: number) {
         this.mesh.scaling.x = scale;
         this.mesh.scaling.y = scale;
-        this.mesh.scaling.z = -scale;
+        this.mesh.scaling.z = scale;
     }
 
     setPosition(pos: Vector2) {

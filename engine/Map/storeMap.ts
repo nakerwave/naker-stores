@@ -102,7 +102,8 @@ export class StoreMap {
             this.storeModels.push(newStore);
             // Removed timeout to avoid stop rendering wich create lag
             // setTimeout(() => {
-            this.storeModels[i].showAnim();
+            this.storeModels[i].show();
+            // this.storeModels[i].showAnim();
             // j++;
             // if (j == this.maxStores) this.system.updateShadows();
             // }, i * 200);

@@ -93,8 +93,6 @@ export class Pipeline {
 
         // this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Medium;
         this.defaultPipeline.depthOfField.fStop = 3;
-        console.log(this.defaultPipeline.depthOfField);
-        
         this.defaultPipeline.depthOfField.focalLength = 500;
 
         this.defaultPipeline.bloomKernel = 20;

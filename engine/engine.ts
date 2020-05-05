@@ -75,11 +75,11 @@ export class GameEngine {
         this.ground = new Ground(this.system, this.tileMap, this.mouseCatcher);
         this.storeMap = new StoreMap(this.system, this.tileMap, this.ground, this.car, this.modal);
 
-        setTimeout(() => {
-            this.storeMap.updateStores([-1.414176, 48.680365]);
-            this.modal.setStart([-1.414176, 48.680365]);
-            setStyle(this.searchInput.form, { top: '-30px' });
-        }, 5000);
+        // setTimeout(() => {
+        //     this.storeMap.updateStores([-1.414176, 48.680365]);
+        //     this.modal.setStart([-1.414176, 48.680365]);
+        //     setStyle(this.searchInput.form, { top: '-30px' });
+        // }, 5000);
         
         // this.system.scene.freezeActiveMeshes();
         // this.system.camera.attachControl(gameOptions.canvas);

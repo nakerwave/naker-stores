@@ -217,26 +217,6 @@ export class Ground {
         this.system.updateShadows();
     }
 
-    spotWidthNumber = 20;
-    spotWidth = 10;
-    getStoreSpot(store) {
-        let pos = store.position;
-        let roundPos = { x: Math.round(pos.x / this.spotWidth), y: Math.round(pos.y / this.spotWidth) };
-
-        let offset = this.spotWidthNumber / 2;
-        let gridPos = { x: roundPos.x + offset, y: roundPos.y + offset };
-
-        while (this.gridSpot[gridPos.x][gridPos.y]) {
-            gridPos.x += Math.round((Math.random() - 0.5) * 2);
-            gridPos.y += Math.round((Math.random() - 0.5) * 2);
-        }
-        this.gridSpot[gridPos.x][gridPos.y] = store.name;
-
-        pos.x = (gridPos.x - offset) * this.spotWidth;
-        pos.y = (gridPos.y - offset) * this.spotWidth;
-        return pos;
-    }
-
     showFog(callback?: Function) {
         this.fogAnimation.simple(50, (count, perc) => {
             let easePerc = this.cameraMove.ease(perc);

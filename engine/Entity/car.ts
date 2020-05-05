@@ -30,7 +30,7 @@ export class Car extends ModelEntity {
         this.curve.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
 
         this.addMesh();
-        this.setSize(1.2);
+        this.setSize(3);
         this.hide();
         this.addModel();
         this.setPosition(houseDoorWayVector);
@@ -44,13 +44,10 @@ export class Car extends ModelEntity {
 
     addModel() {
         this.loadModel('Voiture2.glb', (model) => {
-            for (let i = 0; i < model.length; i++) {
-                const mesh = model[i];
-                mesh.rotation.z = -Math.PI / 2;
-            }
-            // this.setRotation(-Math.PI / 2);
             this.hide();
+            this.setNoShadow();
         });
+
     }
 
     destination: Vector2;
@@ -102,6 +99,6 @@ export class Car extends ModelEntity {
         this._setPosition(pos);
         this.mesh.position.x = pos.x;
         this.mesh.position.z = pos.y;
-        this.mesh.position.y = 0.8;
+        this.mesh.position.y = 1;
     }
 }

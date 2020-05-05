@@ -14,9 +14,8 @@ export class House extends ModelEntity {
     constructor(system: UiSystem) {
         super('house', system);
         this.addMesh();
-        this.setSize(13);
+        this.setSize(7);
         this.setPosition(Vector2.Zero());
-        this.hide();
         this.addModel();
     }
     
@@ -26,24 +25,17 @@ export class House extends ModelEntity {
     }
     
     addModel() {
-        this.loadModel('maison.glb', (model) => {
+        this.loadModel('Maison-txtr.gltf', (model) => {
             this.setRotation(Math.PI);
             this.hide();
         });
     }
 
-    // GLTF MODEL +WEIRD SCALE
-    scaleMesh(scale: number) {
-        this.mesh.scaling.x = scale;
-        this.mesh.scaling.y = scale/5;
-        this.mesh.scaling.z = -scale;
-    }
-
     setPosition(pos: Vector2) {
         this._setPosition(pos);
-        this.mesh.position.x = pos.x;
+        this.mesh.position.x = pos.x + 2;
         this.mesh.position.z = pos.y;
-        this.mesh.position.y = -0.2;
+        this.mesh.position.y = 1;
     }
 
     setEvent() {
