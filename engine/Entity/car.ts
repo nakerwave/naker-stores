@@ -2,7 +2,7 @@ import { Animation } from '@naker/services/System/systemAnimation';
 
 import { MeshSystem } from '../System/meshSystem';
 import { point2D } from '../System/interface';
-import { ModelEntity } from '../Entity/modelEntity';
+import { ModelEntity } from './modelEntity';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 
 import { Vector2 } from '@babylonjs/core/Maths/math';

@@ -12,7 +12,7 @@ import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 
 import find from 'lodash/find';
 import { ui_text, ui_image } from '../Ui/node';
-import { Car, houseDoorWayVector, storeDoorWayVector } from '../Map/car';
+import { Car, houseDoorWayVector, storeDoorWayVector } from './car';
 import { Road } from '../Map/road';
 import { RoadCylinder } from '../Map/roadCylinder';
 

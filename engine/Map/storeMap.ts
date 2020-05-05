@@ -1,6 +1,6 @@
 import { UiSystem } from '../System/uiSystem';
 import { Store, StoreData } from '../Entity/store';
-import { Car } from './car';
+import { Car } from '../Entity/car';
 import { Ground } from './Ground';
 import { ModalUI } from '../Ui/modal';
 import { TileMap } from './tileMap';

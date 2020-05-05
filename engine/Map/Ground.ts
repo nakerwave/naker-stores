@@ -204,7 +204,7 @@ export class Ground {
         }, callback);
     }
 
-    treeDistance = 100;
+    treeDistance = 150;
     moveTreeGroup() {
         for (let i = 0; i < this.treeGroups.length; i++) {
             const treeGroup = this.treeGroups[i];
@@ -352,7 +352,7 @@ export class Ground {
     setEvents(mouseCatcher: MouseCatcher) {
         mouseCatcher.addListener((mousepos: Vector2) => {
             if (this.sensitivity != 0) {
-                let newrot = new Vector2(mousepos.y / 5, mousepos.x / 5);
+                let newrot = new Vector2(mousepos.y / 10, mousepos.x / 10);
                 this.setCameraRotation(newrot);
             }
         });

@@ -5,7 +5,7 @@ import { StoreMap } from './Map/storeMap';
 import { ModalUI } from './Ui/modal';
 import { Pipeline } from './System/pipeline';
 import { House } from './Entity/house';
-import { Car } from './Map/car';
+import { Car } from './Entity/car';
 
 import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
 import { TouchCatcher } from '@naker/services/Catchers/touchCatcher';

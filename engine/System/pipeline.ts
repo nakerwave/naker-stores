@@ -139,7 +139,7 @@ export class Pipeline {
         this._system.on(EventsName.Stop, () => {
             this.defaultPipeline.samples = 4;
             this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Medium;
-            this._setDepthOfFieldKernel(this.kernel/2);
+            this._setDepthOfFieldKernel(this.kernel/4);
         }, null, true);
     }
 
