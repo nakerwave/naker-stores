@@ -2,7 +2,7 @@ import { UiSystem } from '../System/uiSystem';
 import { ModalUI } from '../Ui/modal';
 import { ModelEntity } from './modelEntity';
 
-import { Color3, Vector2, Vector3 } from '@babylonjs/core/Maths/math';
+import { Color3, Vector2, Vector3, Quaternion } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { Control } from '@babylonjs/gui/2D/controls/control';
@@ -38,19 +38,19 @@ export let storeList: Array < StoreInterface > = [
         type: 'farm',
         color: new Color3(1, 0, 0),
         model: 'panier2.gltf',
-        scale: 1,
+        scale: 0.9,
     },
     {
         type: 'cheese',
         color: new Color3(1, 1, 0),
         model: 'Lait.glb',
-        scale: 0.7,
+        scale: 0.6,
     },
     {
         type: 'seafood',
         color: new Color3(0, 0, 1),
         model: 'Poisson2.glb',
-        scale: 1,
+        scale: 0.4,
     },
     {
         type: 'greengrocer',
@@ -62,13 +62,13 @@ export let storeList: Array < StoreInterface > = [
         type: 'wine',
         color: new Color3(0.5, 0, 0),
         model: 'Vin.glb',
-        scale: 1,
+        scale: 0.6,
     },
     {
         type: 'pastry',
         color: new Color3(0.5, 0.3, 0),
         model: 'Pain4.gltf',
-        scale: 0.6,
+        scale: 0.5,
     },
     {
         type: 'beverages',
@@ -189,18 +189,18 @@ export class Store extends ModelEntity {
 
     type: string;
     latlng: Array<number>;
-    storeModel: Array<Mesh>;
+    storeParent: Mesh;
     setStore(type: string, name: string, latlng: Array<number>) {
         this.type = type;
         this.latlng = latlng;
         this.setLabelText(name);
         let storeType = find(storeList, (s) => { return type.indexOf(s.type) != -1 });
         if (!storeType) return console.log(type);
-        this.loadModel(storeType.model, (storeModel) =>{
-            this.storeModel = storeModel;
-            for (let i = 0; i < storeModel.length; i++) {
-                const mesh = storeModel[i];
-                mesh.position.y = 0.5;
+        this.loadModel(storeType.model, (storeMeshes, storeParent) =>{
+            this.storeParent = storeParent;
+            for (let i = 0; i < storeMeshes.length; i++) {
+                const mesh = storeMeshes[i];
+                mesh.position.y = 0.4;
                 mesh.scaling.x = 2 * storeType.scale;
                 mesh.scaling.y = 2 * storeType.scale;
                 mesh.scaling.z = 2 * storeType.scale;
@@ -228,10 +228,12 @@ export class Store extends ModelEntity {
     }
 
     setStoreModelRotation(rotation: number) {
-        for (let i = 0; i < this.storeModel.length; i++) {
-            const mesh = this.storeModel[i];
-            mesh.rotation.y = rotation;
-        }
+        // for (let i = 0; i < this.storeModel.length; i++) {
+        //     const mesh = this.storeModel[i];
+        //     mesh.rotation.y = rotation;
+        // }
+        this.storeParent.rotation.y = rotation;
+        this.storeParent.rotationQuaternion = Quaternion.RotationYawPitchRoll(rotation, 0, 0);
     }
 
     hideAnim(callback?: Function) {

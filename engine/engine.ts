@@ -17,7 +17,7 @@ import { TileMap } from './Map/tileMap';
 // Améliorer route texture
 // Temps de trajet pour aller au magasins
 // Voir problème pain
-// Faire en sorte que la scène soit plus clair, plus vive
+// Faire en sorte que la scène soit plus clair, plus vive => utiliser colormapping
 // Tester converttoflatshadedmesh
 // Au départ on ne comprend pas le but: ajouter une phrase d'accroche
 // Voir ajouter dragandrop pour déplacer la carte

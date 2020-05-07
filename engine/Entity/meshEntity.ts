@@ -1,6 +1,6 @@
 import { MeshSystem } from '../System/meshSystem';
 
-import { Vector2 } from '@babylonjs/core/Maths/math';
+import { Vector2, Quaternion } from '@babylonjs/core/Maths/math';
 import { PositionEntity } from './positionEntity';
 import { Animation } from '@naker/services/System/systemAnimation';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
@@ -36,8 +36,9 @@ export class MeshEntity extends PositionEntity {
         this.mesh.position.y = 0.1;
     }
 
-    setRotation(rot: number) {
-        this.mesh.rotation.y = rot;
+    setRotation(rotation: number) {
+        this.mesh.rotation.y = rotation;
+        this.mesh.rotationQuaternion = Quaternion.RotationYawPitchRoll(rotation, 0, 0);
     }
 
     showAnimLength = 20;

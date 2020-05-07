@@ -5,6 +5,7 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh';
 export class ModelEntity extends MeshEntity {
 
     model: Array<Mesh>;
+    parentModel: Mesh;
     loadModel(modelFile: string, callback?: Function) {
         this.system.loadModel(modelFile, (model) => {
             for (let i = 0; i < model.length; i++) {
@@ -16,10 +17,14 @@ export class ModelEntity extends MeshEntity {
                 this.system.shadowGenerator.addShadowCaster(mesh);
             }
             let mainparents = this.system.getModelParents(model);
-            mainparents[0].parent = this.mesh;
+            console.log(this.type);
+            
+            let parentModel = mainparents[0];
+            parentModel.parent = this.mesh;
             
             this.model = model;
-            if (callback) callback(model);
+            this.parentModel = parentModel;
+            if (callback) callback(model, parentModel);
         });
     }
 
