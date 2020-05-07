@@ -12,11 +12,8 @@ import { TouchCatcher } from '@naker/services/Catchers/touchCatcher';
 import { setStyle } from 'redom';
 import { TileMap } from './Map/tileMap';
 
-// Nord-Sud pas bon avec l'itinéraire
 // Ajouter flèche sur les côtés
-// Améliorer route texture
 // Temps de trajet pour aller au magasins
-// Voir problème pain
 // Faire en sorte que la scène soit plus clair, plus vive => utiliser colormapping
 // Tester converttoflatshadedmesh
 // Au départ on ne comprend pas le but: ajouter une phrase d'accroche
@@ -25,6 +22,9 @@ import { TileMap } from './Map/tileMap';
 // Afficher l'adresse exacte et la distance
 // Si possible horaire d'ouverture et numéro de téléphone
 // Avoir voiture, vélo et bonhome pour avoir un indicateur de distance
+// Optimiser rendu
+// Magasin à l'envert, fenêtre à droite
+// Désactiver postprocess si fps très bas.
 
 export interface GameInterface {
     canvas?: HTMLCanvasElement,
@@ -75,11 +75,11 @@ export class GameEngine {
         this.ground = new Ground(this.system, this.tileMap, this.mouseCatcher);
         this.storeMap = new StoreMap(this.system, this.tileMap, this.ground, this.car, this.modal);
 
-        // setTimeout(() => {
-        //     this.storeMap.updateStores([-1.414176, 48.680365]);
-        //     this.modal.setStart([-1.414176, 48.680365]);
-        //     setStyle(this.searchInput.form, { top: '-30px' });
-        // }, 5000);
+        setTimeout(() => {
+            this.storeMap.updateStores([-1.414176, 48.680365]);
+            this.modal.setStart([-1.414176, 48.680365]);
+            setStyle(this.searchInput.form, { top: '-30px' });
+        }, 5000);
         
         // this.system.scene.freezeActiveMeshes();
         // this.system.camera.attachControl(gameOptions.canvas);
@@ -88,10 +88,9 @@ export class GameEngine {
         this.system.launchRender();
         this.system.setSky(() => {
             this.ground.loadDecor();
-            this.car.showAnim();
-            this.house.showAnim(() => {
-                this.system.updateShadows();
-            });
+            this.car.show();
+            this.house.show();
+            this.system.updateShadows();
             // this.system.soundManager.load();
         });
     }

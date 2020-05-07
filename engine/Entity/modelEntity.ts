@@ -17,8 +17,6 @@ export class ModelEntity extends MeshEntity {
                 this.system.shadowGenerator.addShadowCaster(mesh);
             }
             let mainparents = this.system.getModelParents(model);
-            console.log(this.type);
-            
             let parentModel = mainparents[0];
             parentModel.parent = this.mesh;
             
@@ -26,12 +24,6 @@ export class ModelEntity extends MeshEntity {
             this.parentModel = parentModel;
             if (callback) callback(model, parentModel);
         });
-    }
-
-    scaleMesh(scale: number) {
-        this.mesh.scaling.x = scale;
-        this.mesh.scaling.y = scale;
-        this.mesh.scaling.z = -scale;
     }
 
     setNoShadow() {

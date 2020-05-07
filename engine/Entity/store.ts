@@ -41,6 +41,12 @@ export let storeList: Array < StoreInterface > = [
         scale: 0.9,
     },
     {
+        type: 'garden_center',
+        color: new Color3(1, 0, 0),
+        model: 'panier2.gltf',
+        scale: 0.9,
+    },
+    {
         type: 'cheese',
         color: new Color3(1, 1, 0),
         model: 'Lait.glb',
@@ -100,6 +106,7 @@ export class Store extends ModelEntity {
         this.addMesh();
         this.addEventMesh();
         this.addLabel();
+        this.setRotation(Math.PI);
         this.hide();
     }
 
@@ -205,6 +212,7 @@ export class Store extends ModelEntity {
                 mesh.scaling.y = 2 * storeType.scale;
                 mesh.scaling.z = 2 * storeType.scale;
             }
+            this.setStoreModelRotation(0);
         });
         
         // this.mesh.material.albedoColor = storeType.color;
@@ -228,10 +236,6 @@ export class Store extends ModelEntity {
     }
 
     setStoreModelRotation(rotation: number) {
-        // for (let i = 0; i < this.storeModel.length; i++) {
-        //     const mesh = this.storeModel[i];
-        //     mesh.rotation.y = rotation;
-        // }
         this.storeParent.rotation.y = rotation;
         this.storeParent.rotationQuaternion = Quaternion.RotationYawPitchRoll(rotation, 0, 0);
     }
@@ -244,7 +248,6 @@ export class Store extends ModelEntity {
         }, () => {
             this.hide();
             if (callback) callback();
-            // this.mesh.isVisible = false;
         });
     }
 

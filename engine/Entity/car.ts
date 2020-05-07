@@ -60,11 +60,11 @@ export class Car extends ModelEntity {
             let progress: Vector2;
             if (easePerc < 0.5) {
                 progress = change.multiply(new Vector2(0, easePerc * 2));
-                if (destination.y > 0) this.setRotation(0);
-                else this.setRotation(Math.PI);
+                if (destination.y > 0) this.setRotation(Math.PI);
+                else this.setRotation(0);
             } else {
-                if (destination.x > 0) this.setRotation(Math.PI / 2);
-                else this.setRotation(-Math.PI/2);
+                if (destination.x > 0) this.setRotation(-Math.PI / 2);
+                else this.setRotation(Math.PI/2);
                 progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
             }
             let pos = houseDoorWayVector.add(progress);
@@ -81,12 +81,12 @@ export class Car extends ModelEntity {
             let progress: Vector2;
             if (easePerc > 0.5) {
                 progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
-                if (change.x > 0) this.setRotation(-Math.PI / 2);
-                else this.setRotation(Math.PI / 2);
+                if (change.x > 0) this.setRotation(Math.PI / 2);
+                else this.setRotation(-Math.PI / 2);
             } else {
                 progress = change.multiply(new Vector2(0, easePerc * 2));
-                if (change.y > 0) this.setRotation(Math.PI);
-                else this.setRotation(0);
+                if (change.y > 0) this.setRotation(0);
+                else this.setRotation(Math.PI);
             }
             let pos = houseDoorWayVector.add(progress);
             this.setPosition(pos);

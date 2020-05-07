@@ -16,7 +16,7 @@ export class House extends ModelEntity {
         this.addMesh();
         this.setSize(7);
         this.setPosition(Vector2.Zero());
-        this.setRotation(Math.PI);
+        // this.setRotation(Math.PI);
         this.addModel();
     }
     
@@ -33,8 +33,8 @@ export class House extends ModelEntity {
 
     setPosition(pos: Vector2) {
         this._setPosition(pos);
-        this.mesh.position.x = pos.x + 7;
-        this.mesh.position.z = pos.y + 1;
+        this.mesh.position.x = pos.x - 8;
+        this.mesh.position.z = pos.y;
         this.mesh.position.y = 1;
     }
 

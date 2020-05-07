@@ -136,24 +136,6 @@ export class Ground {
         });
     }
 
-    currentTarget = Vector2.Zero();
-    moveCameraToCenter(center: Vector2, callback?: Function) {
-        let change = this.currentTarget.subtract(center);
-        // let currentPosition = this.system.camera.position.clone();
-        this.animation.simple(50, (count, perc) => {
-            let easePerc = this.cameraMove.ease(perc);
-            let progress = change.multiply(new Vector2(easePerc, easePerc));
-            let newTarget = this.currentTarget.add(progress);
-            let target = new Vector3(newTarget.x, 0, newTarget.y);
-            this.system.camera.setTarget(target);
-            // let newPos = currentPosition.add(new Vector3(currentPosition.x - change.x, currentPosition.y, currentPosition.z - change.y));
-            // this.system.camera.setPosition(newPos);
-        }, () => {
-            this.currentTarget = center;
-            if (callback) callback();
-        });
-    }
-
     movingStep = Vector2.Zero();
     target = Vector3.Zero();
     step = 1;
@@ -351,7 +333,7 @@ export class Ground {
 
     mousePosition = new Vector2(0, 0);
     setCameraRotation(rot: Vector2) {
-        this.system.camera.alpha = -0.1 * rot.y * this.realSensitivity - Math.PI / 3;
+        this.system.camera.alpha = -0.1 * rot.y * this.realSensitivity - Math.PI / 2;
         this.system.camera.beta = -0.1 * rot.x * this.realSensitivity + Math.PI / 4;
     }
 }
