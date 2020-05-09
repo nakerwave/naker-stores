@@ -50,30 +50,39 @@ export class MeshSystem extends EnvironmentSystem {
     }
 
     unfreezeMaterials() {
-        // for (let i = 0; i < this.scene.materials.length; i++) {
-        //     const material = this.scene.materials[i];
-        //     material.unfreeze();
-        // }
-        this.storeMaterial.unfreeze();
+        for (let i = 0; i < this.scene.materials.length; i++) {
+            const material = this.scene.materials[i];
+            material.unfreeze();
+        }
+        // this.storeMaterial.unfreeze();
         // this.ribbonMaterial.unfreeze();
     }
 
     freezeMaterials() {
-        // for (let i = 0; i < this.scene.materials.length; i++) {
-        //     const material = this.scene.materials[i];
-        //     material.freeze();
-        // }
-        this.storeMaterial.freeze();
+        for (let i = 0; i < this.scene.materials.length; i++) {
+            const material = this.scene.materials[i];
+            material.freeze();
+        }
+        // this.storeMaterial.freeze();
         // this.ribbonMaterial.freeze();
     }
 
     checkMaterials() {
         // Freeze all material to have better performance
         this.unfreezeMaterials();
+        this.scene.render();
         this.freezeMaterials();
         // setTimeout(() => {
         //     this.freezeMaterials();
         // }, 100);
+    }
+
+    checkActiveMeshes() {
+        console.log('che');
+        
+        this.scene.unfreezeActiveMeshes();
+        this.scene.freezeActiveMeshes();
+        this.checkMaterials();
     }
 
     groupInstance (masterParent: Mesh) {

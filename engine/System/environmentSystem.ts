@@ -96,12 +96,12 @@ export class EnvironmentSystem extends System {
     sceneTexture: CubeTexture;
     setSky(callback?: Function) {
         let asseturl = 'https://d2uret4ukwmuoe.cloudfront.net/environment_v1/';
-        let envUrl = asseturl + 'sky_light.env';
+        let envUrl = asseturl + 'palermo.env';
         // let envUrl = offlineEnvTexture;
         this.sceneTexture = new CubeTexture(envUrl, this.scene, null, false, null, () => {
             // this.sceneTexture.gammaSpace = false;
             this.scene.environmentTexture = this.sceneTexture;
-            // this.scene.environmentTexture.level = 0.00001;
+            // this.scene.environmentTexture.level = 0.1;
             // this.skyboxMaterial.reflectionTexture = this.sceneTexture.clone();
             // this.skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
             // this.groundMaterial.reflectionTexture = this.sceneTexture.clone();

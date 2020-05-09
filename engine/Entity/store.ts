@@ -116,7 +116,7 @@ export class Store extends ModelEntity {
         this.eventMesh.alwaysSelectAsActiveMesh = true;
         this.eventMesh.doNotSyncBoundingInfo = true;
         this.eventMesh.isVisible = true;
-        this.eventMesh.visibility = 0.3;
+        this.eventMesh.visibility = 0.0001;
         this.eventMesh.scaling = new Vector3(this.size * 1, this.size * 1, this.size * 1);
         this.eventMesh.parent = this.mesh;
     }

@@ -29,7 +29,7 @@ export class System extends SystemQuality {
         super(canvas);
         
         this.paramScene();
-        this.addLight();
+        // this.addLight();
         this.setHorizontalFixed(true);
     }
 
@@ -58,7 +58,6 @@ export class System extends SystemQuality {
         // this.light = new DirectionalLight("spot", new Vector3(-2, -10, -2), this.scene);
         // this.light.position = new Vector3(-40, 100, -40);
         this.light.intensity = 10000;
-        this.light.autoUpdateExtends = false;
         
         this.scene.shadowsEnabled = true;
         let shadowQuality = 2;
@@ -67,15 +66,21 @@ export class System extends SystemQuality {
         this.shadowGenerator.useBlurExponentialShadowMap = true;
         this.shadowGenerator.useKernelBlur = true;
         this.shadowGenerator.blurKernel = 64 / shadowRatio;
-        this.shadowGenerator.getShadowMap().refreshRate = RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
+        console.log(this.shadowGenerator);
+        
+        // this.light.autoUpdateExtends = false;
+        // this.shadowGenerator.getShadowMap().refreshRate = RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
     }
 
     updateShadows() {
-        this.shadowGenerator.getShadowMap().refreshRate = RenderTargetTexture.REFRESHRATE_RENDER_ONEVERYFRAME;
-        this.light.autoUpdateExtends = true;
-        this.scene.render();
-        this.shadowGenerator.getShadowMap().refreshRate = RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
-        this.light.autoUpdateExtends = false;
+        if (!this.shadowGenerator) return; 
+        // this.light.isEnabled(true);
+        // this.shadowGenerator.getShadowMap().refreshRate = RenderTargetTexture.REFRESHRATE_RENDER_ONEVERYFRAME;
+        // this.light.autoUpdateExtends = true;
+        // this.scene.render();
+        // this.shadowGenerator.getShadowMap().refreshRate = RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
+        // this.light.autoUpdateExtends = false;
+        // this.light.isEnabled(false);
     }
     
     camera: ArcRotateCamera;

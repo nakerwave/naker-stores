@@ -192,7 +192,7 @@ export class Road {
         let material = new PBRMaterial("roadMaterial", system.scene);
         material.roughness = 1;
         material.metallic = 0;
-        material.albedoColor = new Color3(1, 1, 0.3);
+        material.albedoColor = new Color3(0.4, 0.4, 0.1);
         // material.emissiveColor = new Color3(0.5, 0.5, 0);
         // material.albedoTexture = new Texture(roadTexture, system.scene);
         this.mesh.material = material;

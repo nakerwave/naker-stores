@@ -87,7 +87,7 @@ export class Ground {
         this.groundMaterial = new PBRMaterial("groundMaterial", this.system.scene);
         this.groundMaterial.roughness = 1;
         this.groundMaterial.metallic = 0.2;
-        this.groundMaterial.albedoColor = new Color3(1 / 255, 255 / 255, 56 / 255);
+        this.groundMaterial.albedoColor = new Color3(1 / 255, 105 / 255, 16 / 255);
         // this.groundMaterial = new StandardMaterial("groundMaterial", this.system.scene);
         // this.groundMaterial.diffuseColor = new Color3(1 / 255, 255 / 255, 56 / 255);
     }
@@ -294,9 +294,9 @@ export class Ground {
         for (let i = 0; i < children.length; i++) {
             const child: Mesh = children[i];
             child.isVisible = true;
-            this.system.shadowGenerator.addShadowCaster(child);
             child.alwaysSelectAsActiveMesh = true;
             child.doNotSyncBoundingInfo = true;
+            if (this.system.shadowGenerator) this.system.shadowGenerator.addShadowCaster(child);
         }
         let randomPos = this.getPositionAround();
         mesh.position.x = randomPos.x;

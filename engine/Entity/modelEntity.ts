@@ -24,7 +24,7 @@ export class ModelEntity extends MeshEntity {
             // mesh.receiveShadow = true;
             mesh.alwaysSelectAsActiveMesh = true;
             mesh.doNotSyncBoundingInfo = true;
-            this.system.shadowGenerator.addShadowCaster(mesh);
+            if (this.system.shadowGenerator) this.system.shadowGenerator.addShadowCaster(mesh);
         }  
     }
 
@@ -37,7 +37,7 @@ export class ModelEntity extends MeshEntity {
     setNoShadow() {
         for (let i = 0; i < this.model.length; i++) {
             const mesh = this.model[i];
-            this.system.shadowGenerator.removeShadowCaster(mesh);
+            if (this.system.shadowGenerator) this.system.shadowGenerator.removeShadowCaster(mesh);
         }
     }
 }
