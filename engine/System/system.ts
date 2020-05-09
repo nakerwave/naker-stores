@@ -36,6 +36,7 @@ export class System extends SystemQuality {
     paramScene() {
         this.scene.ambientColor = new Color3(0.0, 0.0, 0.0);
         this.scene.clearColor = new Color4(0.0, 0.0, 0.0, 0.0);
+
         // this.scene.autoClear = false; // Color buffer
         // this.scene.autoClearDepthAndStencil = false; // Depth and stencil, obviously
         // this.scene.blockfreeActiveMeshesAndRenderingGroups = true;
@@ -46,8 +47,9 @@ export class System extends SystemQuality {
         // this.scene.blockMaterialDirtyMechanism = true;
         // this.scene.setRenderingAutoClearDepthStencil(renderingGroupIdx, autoClear, depth, stencil);
         this.setCamera();
-        
         this.setLimitFPS(true);
+        // this.optimize();
+        this.improveQualityAtBreak(true);
     }
 
     shadowGenerator: ShadowGenerator;

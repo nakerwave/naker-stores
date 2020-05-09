@@ -55,13 +55,13 @@ export let storeCategories: Array < StoreInterface > = [
         type: 'seafood',
         color: new Color3(0, 0, 1),
         model: 'Poisson2.glb',
-        scale: 0.3,
+        scale: 0.2,
     },
     {
         type: 'greengrocer',
         color: new Color3(0, 0.7, 0),
         model: 'Legumes_bqt.gltf',
-        scale: 1.2,
+        scale: 1.3,
     },
     {
         type: 'wine',
@@ -79,7 +79,7 @@ export let storeCategories: Array < StoreInterface > = [
         type: 'beverages',
         color: new Color3(1, 0, 1),
         model: 'Legumes_bqt.gltf',
-        scale: 1.2,
+        scale: 1.3,
     },
     {
         type: 'butcher',
@@ -117,7 +117,7 @@ export class Store extends ModelEntity {
         this.eventMesh.doNotSyncBoundingInfo = true;
         this.eventMesh.isVisible = true;
         this.eventMesh.visibility = 0.0001;
-        this.eventMesh.scaling = new Vector3(this.size * 1, this.size * 1, this.size * 1);
+        this.eventMesh.scaling = new Vector3(this.size * 1.2, this.size * 1.2, this.size * 1.2);
         this.eventMesh.parent = this.mesh;
     }
 
@@ -147,15 +147,16 @@ export class Store extends ModelEntity {
     label: ui_text;
     board: ui_image;
     labelpresent = false;
+    yLabelOfffset = 80;
     addLabel() {
         this.board = new ui_image(this.system, this.system.advancedTexture, pancarteUrl, { x: 0, y: 0 }, { width: '150px' });
-        this.board.container.linkOffsetY = 60;
+        this.board.container.linkOffsetY = this.yLabelOfffset;
         this.board.container.linkWithMesh(this.mesh);
 
         this.label = new ui_text(this.system, this.system.advancedTexture, '', { x: 0, y: 0 }, { width: '120px', fontSize: 14, float: 'center' });
         this.label.setTextStyle({ textVerticalAlignment: Control.VERTICAL_ALIGNMENT_TOP });
         this.label.setStyle({ cornerRadius: 0, zInex: 1000, height: '100px' });
-        this.label.container.linkOffsetY = 60;
+        this.label.container.linkOffsetY = this.yLabelOfffset;
         this.label.container.linkOffsetX = -10;
         this.label.container.linkWithMesh(this.mesh);
 

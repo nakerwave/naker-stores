@@ -32,9 +32,6 @@ export class StoreMap {
         this.modal = modal;
         this.tileMap = tileMap;
         this.car = car;
-
-        this.loadBaseModel();
-        this.loadStoresModel();
     }
 
     base: Array<Mesh> = [];
@@ -135,8 +132,10 @@ export class StoreMap {
         let storeType = find(storeCategories, (s) => { return type.indexOf(s.type) != -1 });
         let baseMeshes = [];
         for (let i = 0; i < this.base.length; i++) {
-            let newMesh = this.base[i].createInstance('');
-            baseMeshes.push(newMesh);
+            let mesh = this.base[i].createInstance('');
+            mesh.alwaysSelectAsActiveMesh = true;
+            mesh.doNotSyncBoundingInfo = true;
+            baseMeshes.push(mesh);
         }
         baseMeshes[0].dispose();
         baseMeshes[0] = this.baseCat[storeType.type].createInstance('');
@@ -174,14 +173,13 @@ export class StoreMap {
                 this.storesList.push(newStore);
                 // Removed timeout to avoid stop rendering wich create lag
                 // setTimeout(() => {
-                this.storesList[i].show();
+                newStore.show();
                 // this.storesList[i].showAnim();
                 // j++;
                 // if (j == this.maxStores) this.system.updateShadows();
                 // }, i * 200);
             }
         }
-        this.system.checkActiveMeshes();
         setTimeout(() => {
             this.system.checkActiveMeshes();
             this.system.updateShadows();

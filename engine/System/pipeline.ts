@@ -9,6 +9,7 @@ import { ColorCurves } from '@babylonjs/core/Materials/colorCurves';
 import { Color4 } from '@babylonjs/core/Maths/math';
 import { EasingFunction, CircleEase } from '@babylonjs/core/Animations/easing';
 import { DepthOfFieldEffectBlurLevel } from '@babylonjs/core/PostProcesses/depthOfFieldEffect';
+import { SSAORenderingPipeline } from '@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/ssaoRenderingPipeline';
 import clone from 'lodash/clone';
 import { EventsName } from '@naker/services/Tools/observable';
 
@@ -98,6 +99,24 @@ export class Pipeline {
         this.defaultPipeline.bloomKernel = 20;
         this.defaultPipeline.bloomWeight = 0;
         this.defaultPipeline.bloomThreshold = 0.5;
+
+        // Create SSAO and configure all properties (for the example)
+        // var ssaoRatio = {
+        //     ssaoRatio: 0.5, // Ratio of the SSAO post-process, in a lower resolution
+        //     combineRatio: 1.0 // Ratio of the combine post-process (combines the SSAO and the scene)
+        // };
+        // var ssao = new SSAORenderingPipeline("ssao", this._system.scene, ssaoRatio);
+        // ssao.fallOff = 0.000001;
+        // ssao.area = 1;
+        // ssao.radius = 0.0001;
+        // ssao.totalStrength = 1.0;
+        // ssao.base = 0.5;
+        // console.log(ssao);
+        
+
+        // Attach camera to the SSAO render pipeline
+        this._system.scene.postProcessRenderPipelineManager.attachCamerasToRenderPipeline("ssao", this._system.camera);
+
 
         this.useSceneImageProcessing();
     }

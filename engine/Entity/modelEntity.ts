@@ -12,6 +12,7 @@ export class ModelEntity extends MeshEntity {
             let children = mainMesh.getChildMeshes();
             this.addMeshes(children);
             this.model = mainMesh;
+            this.system.checkActiveMeshes();
             if (callback) callback(mainMesh, children);
         });
     }

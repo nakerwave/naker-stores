@@ -78,8 +78,6 @@ export class MeshSystem extends EnvironmentSystem {
     }
 
     checkActiveMeshes() {
-        console.log('che');
-        
         this.scene.unfreezeActiveMeshes();
         this.scene.freezeActiveMeshes();
         this.checkMaterials();
@@ -93,8 +91,13 @@ export class MeshSystem extends EnvironmentSystem {
         let children = masterParent.getChildren();
         for (var i = 0; i < children.length; i++) {
             let instchild;
-            if (children[i].createInstance) instchild = children[i].createInstance();  // intancedChild
-            else instchild = this.groupInstance(children[i]);  // intancedChild
+            if (children[i].createInstance) {
+                instchild = children[i].createInstance();  // intancedChild
+                instchild.alwaysSelectAsActiveMesh = true;
+                instchild.doNotSyncBoundingInfo = true;
+            } else {
+                instchild = this.groupInstance(children[i]);
+            }
             instchild.parent = newParent;  // parent the instancedChild to the new groupWidget
         }
         return newParent;  // return the new group widget.

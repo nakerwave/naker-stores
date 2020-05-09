@@ -187,7 +187,8 @@ export class Ground {
     newDecor(callback: Function) {
         this.animFog(() => {
             this.moveTreeGroup();
-        }, callback);
+            callback();
+        });
     }
 
     treeDistance = 150;

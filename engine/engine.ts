@@ -14,17 +14,12 @@ import { TileMap } from './Map/tileMap';
 
 // Ajouter flèche sur les côtés
 // Temps de trajet pour aller au magasins
-// Faire en sorte que la scène soit plus clair, plus vive => utiliser colormapping
-// Tester converttoflatshadedmesh
 // Au départ on ne comprend pas le but: ajouter une phrase d'accroche
 // Voir ajouter dragandrop pour déplacer la carte
 // Avoir une légende pour comprendre ce qu'on vend dans les magasins
 // Afficher l'adresse exacte et la distance
 // Si possible horaire d'ouverture et numéro de téléphone
 // Avoir voiture, vélo et bonhome pour avoir un indicateur de distance
-// Optimiser rendu
-// Magasin à l'envert, fenêtre à droite
-// Désactiver postprocess si fps très bas.
 
 export interface GameInterface {
     canvas?: HTMLCanvasElement,
@@ -47,10 +42,6 @@ export class GameEngine {
 
     constructor(gameOptions: GameInterface) {
         this.system = new UiSystem(gameOptions.canvas);
-        this.system.optimizeHard();
-        this.system.setLimitFPS(true);
-        this.system.improveQualityAtBreak(true);
-
         this.touchCatcher = new TouchCatcher(window);
         this.mouseCatcher = new MouseCatcher(this.system, this.touchCatcher);
         this.mouseCatcher.start();
@@ -58,11 +49,6 @@ export class GameEngine {
 
         // Value for orthographic camera
         // this.pipeline.setFocalDistance(-1);
-
-        this.pipeline.setFocalLength(10000);
-        this.pipeline.setFocalDistance(90);
-        this.pipeline.setVignette([0, 0, 0, 0.2]);
-        this.pipeline.addCamera(this.system.camera);
         
         this.modal = new ModalUI();
         this.searchInput = new SearchUI(this.modal);
@@ -77,25 +63,48 @@ export class GameEngine {
         this.ground = new Ground(this.system, this.tileMap, this.mouseCatcher);
         this.storeMap = new StoreMap(this.system, this.tileMap, this.ground, this.car, this.modal);
 
-        setTimeout(() => {
-            this.storeMap.updateStores([-1.414176, 48.680365]);
-            this.modal.setStart([-1.414176, 48.680365]);
-            setStyle(this.searchInput.form, { top: '-30px' });
-        }, 5000);
+        // setTimeout(() => {
+        //     this.storeMap.updateStores([-1.414176, 48.680365]);
+        //     this.modal.setStart([-1.414176, 48.680365]);
+        //     setStyle(this.searchInput.form, { top: '-30px' });
+        // }, 5000);
         
-        // this.system.scene.freezeActiveMeshes();
         // this.system.camera.attachControl(gameOptions.canvas);
  
         this.system.updateShadows();
-        this.system.launchRender();
         this.system.setSky(() => {
             this.ground.loadDecor();
             this.car.show();
             this.house.show();
-            this.system.updateShadows();
+            // this.system.updateShadows();
             this.system.checkActiveMeshes();
+            setTimeout(() => {
+                this.system.launchRender();
+                this.system.checkActiveMeshes();
+                this.storeMap.loadBaseModel();
+                this.storeMap.loadStoresModel();
+
+                this.pipeline.setFocalLength(10000);
+                this.pipeline.setFocalDistance(90);
+                this.pipeline.setVignette([0, 0, 0, 0.2]);
+                this.pipeline.addCamera(this.system.camera);
+            }, 1000)
             // this.system.soundManager.load();
         });
+
+        let test = 0;
+        this.system.scene.registerBeforeRender(() => {
+            let fps = this.system.engine.getFps();
+            console.log(fps, test);
+            if ( fps < 50 ) test ++;
+            else test = 0;
+            if ( test > 40 ) {
+                this.pipeline.removeCamera(this.system.camera);
+            } else {
+                this.pipeline.addCamera(this.system.camera);
+            }
+            
+        })
     }
 }
 
