@@ -1,6 +1,8 @@
 import { UiSystem } from '../System/uiSystem';
 import { ModalUI } from '../Ui/modal';
 import { ModelEntity } from './modelEntity';
+import { Road } from '../Map/road';
+// import { RoadCylinder } from '../Map/roadCylinder';
 
 import { Color3, Vector2, Vector3, Quaternion } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
@@ -10,11 +12,8 @@ import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 
-import find from 'lodash/find';
 import { ui_text, ui_image } from '../Ui/node';
 import { Car, houseDoorWayVector, storeDoorWayVector } from './car';
-import { Road } from '../Map/road';
-import { RoadCylinder } from '../Map/roadCylinder';
 
 import pancarteUrl from '../../asset/pancarte4.png';
 
@@ -33,18 +32,18 @@ export interface StoreData {
     lat: number;
 }
 
-export let storeList: Array < StoreInterface > = [
+export let storeCategories: Array < StoreInterface > = [
     {
         type: 'farm',
         color: new Color3(1, 0, 0),
         model: 'panier2.gltf',
-        scale: 0.9,
+        scale: 0.8,
     },
     {
         type: 'garden_center',
         color: new Color3(1, 0, 0),
         model: 'panier2.gltf',
-        scale: 0.9,
+        scale: 0.8,
     },
     {
         type: 'cheese',
@@ -56,13 +55,13 @@ export let storeList: Array < StoreInterface > = [
         type: 'seafood',
         color: new Color3(0, 0, 1),
         model: 'Poisson2.glb',
-        scale: 0.4,
+        scale: 0.3,
     },
     {
         type: 'greengrocer',
         color: new Color3(0, 0.7, 0),
         model: 'Legumes_bqt.gltf',
-        scale: 1,
+        scale: 1.2,
     },
     {
         type: 'wine',
@@ -74,13 +73,13 @@ export let storeList: Array < StoreInterface > = [
         type: 'pastry',
         color: new Color3(0.5, 0.3, 0),
         model: 'Pain4.gltf',
-        scale: 0.5,
+        scale: 0.4,
     },
     {
         type: 'beverages',
         color: new Color3(1, 0, 1),
         model: 'Legumes_bqt.gltf',
-        scale: 1,
+        scale: 1.2,
     },
     {
         type: 'butcher',
@@ -102,11 +101,9 @@ export class Store extends ModelEntity {
         this.modal = modal;
         this.car = car;
 
-        this.setSize(3);
-        this.addMesh();
+        this.setSize(2);
         this.addEventMesh();
         this.addLabel();
-        this.setRotation(Math.PI);
         this.hide();
     }
 
@@ -119,21 +116,9 @@ export class Store extends ModelEntity {
         this.eventMesh.alwaysSelectAsActiveMesh = true;
         this.eventMesh.doNotSyncBoundingInfo = true;
         this.eventMesh.isVisible = true;
-        this.eventMesh.visibility = 0.0001;
-        this.eventMesh.scaling = new Vector3(this.size * 0.5, this.size * 0.5, this.size * 0.5);
+        this.eventMesh.visibility = 0.3;
+        this.eventMesh.scaling = new Vector3(this.size * 1, this.size * 1, this.size * 1);
         this.eventMesh.parent = this.mesh;
-    }
-
-    mesh: TransformNode;
-    commerceModel: Array<Mesh>;
-    addMesh() {
-        this.mesh = new TransformNode(this.key, this.system.scene);
-        this.loadModel('commerce_txtr.gltf', (model) => {
-            this.commerceModel = model;
-            let storeType = find(storeList, (s) => { return this.type.indexOf(s.type) != -1 });
-            model[1].material.albedoColor = storeType.color;
-            this.setEvent();
-        });
     }
 
     setPosition(pos: Vector2) {
@@ -181,6 +166,7 @@ export class Store extends ModelEntity {
         this.setPosition(store.position);
         this.setStore(store.cat, store.name, [store.lon, store.lat]);
         this.addRoad(store.position);
+        this.setEvent();
     }
     
     roadStopScale = new Vector2(1.1, 1);
@@ -196,27 +182,17 @@ export class Store extends ModelEntity {
 
     type: string;
     latlng: Array<number>;
-    storeParent: Mesh;
+    storeParent: TransformNode;
     setStore(type: string, name: string, latlng: Array<number>) {
         this.type = type;
         this.latlng = latlng;
         this.setLabelText(name);
-        let storeType = find(storeList, (s) => { return type.indexOf(s.type) != -1 });
-        if (!storeType) return console.log(type);
-        this.loadModel(storeType.model, (storeMeshes, storeParent) =>{
-            this.storeParent = storeParent;
-            for (let i = 0; i < storeMeshes.length; i++) {
-                const mesh = storeMeshes[i];
-                mesh.position.y = 0.4;
-                mesh.scaling.x = 2 * storeType.scale;
-                mesh.scaling.y = 2 * storeType.scale;
-                mesh.scaling.z = 2 * storeType.scale;
-            }
-            this.setStoreModelRotation(0);
-        });
-        
-        // this.mesh.material.albedoColor = storeType.color;
-        // this.label.setStyle({background: storeType.color.toHexString()});
+    }
+
+    addProduct(mesh: TransformNode) {
+        mesh.parent = this.mesh;
+        this.storeParent = mesh;
+        this.setStoreModelRotation(0);
     }
 
     currentRotation: number;

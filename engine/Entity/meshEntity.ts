@@ -16,9 +16,14 @@ export class MeshEntity extends PositionEntity {
         this.animation = new Animation(this.system);
         this.showCurve = new CubicEase();
         this.showCurve.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
+        this.addMesh();
     }
 
     mesh: TransformNode;
+    addMesh() {
+        this.mesh = new TransformNode(this.key, this.system.scene);
+    }
+
     setSize(size: number) {
         this._setSize(size);
     }

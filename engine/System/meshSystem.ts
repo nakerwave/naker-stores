@@ -5,9 +5,6 @@ import '@babylonjs/core/Culling/ray';
 
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { PBRMaterial } from '@babylonjs/core/Materials/PBR/pbrMaterial';
-import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
-import { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
-import { InstancedMesh } from '@babylonjs/core/Meshes/instancedMesh';
 
 import { PearlMesh } from '../Entity/pearlMesh';
 import { EnvironmentSystem } from './environmentSystem';
@@ -79,21 +76,19 @@ export class MeshSystem extends EnvironmentSystem {
         // }, 100);
     }
 
-    groupInstance (masterParent: Mesh, name: string) {
-        var child;
-        var instchild;
+    groupInstance (masterParent: Mesh) {
         // parents MUST be clones, and NOT instances, it seems. Verify to be sure.
-        var newParent = masterParent.clone(name);
-        // console.log(masterParent);
+        var newParent = masterParent.clone('', null, true);
 
         // make a new instance for each of masterParent's children
-        for (var index = 0; index < masterParent.getChildren().length; index++) {
-            child = masterParent.getChildren()[index]; // masterChild
-            instchild = child.createInstance();  // intancedChild
+        let children = masterParent.getChildren();
+        for (var i = 0; i < children.length; i++) {
+            let instchild;
+            if (children[i].createInstance) instchild = children[i].createInstance();  // intancedChild
+            else instchild = this.groupInstance(children[i]);  // intancedChild
             instchild.parent = newParent;  // parent the instancedChild to the new groupWidget
-
-            return newParent;  // return the new group widget.
         }
+        return newParent;  // return the new group widget.
     }
 
     getModelPath(url: string) {
@@ -106,148 +101,7 @@ export class MeshSystem extends EnvironmentSystem {
 
     assetUrl = 'https://test.naker.io/stores/asset/v2/';
     model = {};
-    loadModel(url: string, callback: Function) {
-        let modelpath = this.getModelPath(url);
-        SceneLoader.ImportMesh("", this.assetUrl+modelpath.folder, modelpath.file, this.scene, (meshes, particleSystems, skeletons, animationGroups) => {
-            callback(meshes);
-            // this.modelSucces(url, name, { loadedMeshes: meshes, loadedAnimationGroups: animationGroups }, callback);
-        }, null, (scene, message) => {
-            console.log(message);
-            
-            callback(false, message);
-        })
-    }
-
-    /**
-    * For the models we differenciate several model type on success (normal, animated and instanciated)
-    * @param url The path to where the asset must be loaded
-    * @param name Name of the asset
-    * @param task Object which contains the asset data
-    */
-    modelSucces(url: string, name: string, task, callback: Function) {
-        let animations = task.loadedAnimationGroups;
-        if (animations.length != 0) {
-            this.modelSuccessWithAnimation(url, name, task, callback);
-        } else if (this.checkInstanceInModel(task.loadedMeshes)) {
-            this.modelSuccessWithInstance(url, name, task, callback);
-        } else {
-            this.modelSuccessWithoutAnimation(url, name, task, callback);
-        }
-    }
-
-    /**
-     * Check if model uses instancedMesh
-     * @param meshes List of model meshes
-     */
-    checkInstanceInModel(meshes: Array<Mesh>) {
-        for (let i = 0; i < meshes.length; i++) {
-            if (meshes[i] instanceof InstancedMesh) return true;
-        }
-        return false;
-    }
-
-    /**
-     * When model have animation we can't clone it and keep animation attach to meshes
-     * So we reload it in order to make sure every model as its own animations
-     * @param url The path to where the asset must be loaded
-     * @param name Name of the asset
-     * @param task Object which contains the asset data
-     */
-
-    // See topic here: https://forum.babylonjs.com/t/how-to-clone-a-glb-model-and-play-seperate-animation-on-each-clone/2351/10
-    modelSuccessWithAnimation(url: string, name: string, task, callback: Function) {
-        this.model[url] = 'animated';
-        let modelParents = this.getModelParents(task.loadedMeshes);
-        callback(modelParents, task.loadedAnimationGroups);
-        // if (this.successes[name].length == 1) return;
-        // let modelpath = this.getModelPath(url);
-        // // Animation can't be duplicated so we have to download model everytime (See getAsset function)
-        // for (let i = 1; i < this.successes[name].length; i++) {
-        //     let callback = this.successes[name][i];
-        //     SceneLoader.ImportMesh(null, modelpath.folder, modelpath.file, this.scene, (meshes, particleSystems, skeletons, animationGroups) => {
-        //         let modelParents = this.getModelParents(meshes);
-        //         callback(modelParents, animationGroups);
-        //     });
-        // }
-    }
-
-    /**
-     * When model have instance we can't clone it
-     * So we reload it in order to make sure it works
-     * @param url The path to where the asset must be loaded
-     * @param name Name of the asset
-     * @param task Object which contains the asset data
-     */
-    modelSuccessWithInstance(url: string, name: string, task, callback: Function) {
-        this.model[url] = 'instanced';
-        let modelParents = this.getModelParents(task.loadedMeshes);
-        callback(modelParents);
-        // if (this.successes[name].length == 1) return;
-        // let modelpath = this.getModelPath(url);
-        // // Animation can't be duplicated so we have to download model everytime (See getAsset function)
-        // SceneLoader.ImportMesh(null, modelpath.folder, modelpath.file, this.scene, (meshes, particleSystems, skeletons) => {
-        //     let modelParents = this.getModelParents(meshes);
-        //     callback(modelParents);
-        // });
-    }
-
-    /**
-     * Normal success function for model wihtou instance or animations
-     * @param url The path to where the asset must be loaded
-     * @param name Name of the asset
-     * @param task Object which contains the asset data
-     */
-    modelSuccessWithoutAnimation(url: string, name: string, task, callback: Function) {
-        let meshes = task.loadedMeshes;
-        if (meshes == undefined) return console.warn('Missing meshes in model file');
-        for (let i = 0; i < meshes.length; i++) {
-            meshes[i].isVisible = false;
-        }
-        // If no animation we save meshes for easy and fast model duplication
-        let modelParents = this.getModelParents(meshes);
-        let newModelParents = this.getClonedParentModel(modelParents);
-        callback(newModelParents);
-    }
-
-    /**
-     * Look for all the main model parent
-     * @param meshes List of model meshes
-     */
-    getModelParents(meshes: Array<AbstractMesh>) {
-        let mainParentListId: Array<string> = [];
-        let mainParentList: Array<any> = [];
-        for (let i = 0; i < meshes.length; i++) {
-            let mesh = meshes[i];
-            let rootParent = this.getMeshRootParent(mesh);
-            if (mainParentListId.indexOf(rootParent.id) == -1) {
-                mainParentListId.push(rootParent.id);
-                mainParentList.push(rootParent);
-            }
-        }
-        return mainParentList;
-    }
-
-    /**
-     * Clone the main model parent in order to duplicate a model
-     * @param modelParents List of model parents
-     */
-    getClonedParentModel(modelParents: Array<Mesh>) {
-        let newModelParents: Array<Mesh> = [];
-        for (let i = 0; i < modelParents.length; i++) {
-            // Clone meshes on order to have a new model
-            newModelParents.push(modelParents[i].clone());
-        }
-        return newModelParents;
-    }
-
-    /**
-     * Loop which get the last parent of a Mesh
-     * @param mesh mesh which parent need to be find
-     */
-    getMeshRootParent(mesh: AbstractMesh) {
-        while (mesh.parent) {
-            mesh = mesh.parent;
-        }
-        return mesh;
+    loadModel(modelFile: string, callback: Function) {
+        this.loader.getModel(this.assetUrl + modelFile, callback);
     }
 }

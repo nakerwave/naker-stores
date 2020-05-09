@@ -1,3 +1,5 @@
+import { NakerObservable } from '@naker/services/Tools/observable';
+
 import '@babylonjs/loaders';
 import '@babylonjs/core/Misc/dds';
 import '@babylonjs/core/Materials/Textures/Loaders/ddsTextureLoader';
@@ -13,18 +15,25 @@ import { CubeTexture } from '@babylonjs/core/Materials/Textures/cubeTexture';
 import { HDRCubeTexture } from '@babylonjs/core/Materials/Textures/hdrcubeTexture';
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
 
-import remove from 'lodash/remove';
-
 export interface asset {
     type: 'image' | 'particle' | 'albedo' | 'ambient' | 'specular' | 'emissive' | 'reflectivity' | 'reflection' | 'refraction' | 'heightmap' | 'cubetexture' | 'bump' | 'opacity' | 'model' | 'video' | 'sound',
     url: string
 };
 
+interface LoaderEventData {
+    type: asset["type"],
+    success: boolean,
+    remaining: number;
+    total: number;
+    url?: string,
+    error?: string,
+}
+
 /**
  * Manage the loading of any asset type from images to videos, models, sounds, etc
  */
 
-export class Loader {
+export class Loader extends NakerObservable<LoaderEventData> {
 
     /**
      * @ignore
@@ -66,13 +75,13 @@ export class Loader {
     firstload = true;
 
     onFinish: Function;
-    onProgress: Function;
 
     /**
      * Creates a new loader
      * @param scene AssetsManager need to know to what scene the assets will be loaded
      */
     constructor(scene: Scene) {
+        super();
         this._scene = scene;
         this.reset();
     }
@@ -297,7 +306,7 @@ export class Loader {
             console.log(e)
         }
         this.remainingLoad[type]--;
-        this.sendToListsteners(type, true, url);
+        this.notifyAll({ type: type, success: true, url: url, remaining: this.remaining, total: this.total })
         this.checkFinished();
     }
 
@@ -321,20 +330,21 @@ export class Loader {
         // Must delete success url or loading the same file later will not work
         delete this.successes[name];
         this.remainingLoad[type]--;
-        this.sendToListsteners(type, false, error);
         this.checkFinished();
+        this.notifyAll({ type: type, success: false, error: error, remaining: this.remaining, total: this.total })
     }
 
+    remaining = 0;
+    total = 0;
     checkFinished() {
-        let remaining = 0;
-        let total = 0;
+        this.remaining = 0;
+        this.total = 0;
         for (const key in this.remainingLoad) {
-            remaining += this.remainingLoad[key];
-            total += this.totalLoad[key];
+            this.remaining += this.remainingLoad[key];
+            this.total += this.totalLoad[key];
         }
-        
-        if (this.onProgress) this.onProgress(remaining, total);
-        if (!remaining && this.onFinish) {
+
+        if (!this.remaining && this.onFinish) {
             this.onFinish();
             this.reset();
         }
@@ -565,31 +575,5 @@ export class Loader {
 
     getSound(url: string, callback: Function) {
         this.getAsset('sound', url, callback);
-    }
-
-    sendToListsteners(type: asset["type"], success: boolean, other) {
-        for (let i = 0; i < this.listeners.length; i++) {
-            this.listeners[i](type, success, other);
-        }
-    }
-
-    /**
-     * List of all functions following the progress position
-     * @ignore
-     */
-    listeners: Array<Function> = [];
-
-    /**
-     * Add a new listener which will get the catching progress position
-     */
-    addListener(callback: Function) {
-        this.listeners.push(callback);
-    }
-
-    /**
-     * Remove a listener to stop following progress
-     */
-    removeListener(callback: Function) {
-        remove(this.listeners, (c) => { c == callback });
     }
 }

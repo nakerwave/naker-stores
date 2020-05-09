@@ -13,16 +13,10 @@ export class House extends ModelEntity {
 
     constructor(system: UiSystem) {
         super('house', system);
-        this.addMesh();
         this.setSize(7);
         this.setPosition(Vector2.Zero());
-        // this.setRotation(Math.PI);
+        this.setRotation(Math.PI);
         this.addModel();
-    }
-    
-    mesh: TransformNode;
-    addMesh() {
-        this.mesh = new TransformNode(this.key, this.system.scene);
     }
     
     addModel() {

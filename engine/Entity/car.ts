@@ -5,7 +5,7 @@ import { point2D } from '../System/interface';
 import { ModelEntity } from './modelEntity';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 
-import { Vector2 } from '@babylonjs/core/Maths/math';
+import { Vector2, Quaternion } from '@babylonjs/core/Maths/math';
 import { EasingFunction, CubicEase, } from '@babylonjs/core/Animations/easing';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 
@@ -29,25 +29,24 @@ export class Car extends ModelEntity {
         this.curve = new CubicEase();
         this.curve.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
 
-        this.addMesh();
-        this.setSize(3);
+        this.setSize(1);
         this.hide();
         this.addModel();
         this.setPosition(houseDoorWayVector);
     }
 
-
-    mesh: TransformNode;
-    addMesh() {
-        this.mesh = new TransformNode(this.key, this.system.scene);
-    }
-
     addModel() {
-        this.loadModel('Voiture2.glb', (model) => {
+        this.loadModel('Voiture2.glb', (parent, children) => {
             this.hide();
             this.setNoShadow();
+            this.setRotation(0);
         });
 
+    }
+
+    setRotation(rotation: number) {
+        this.mesh.rotation.y = rotation;
+        this.mesh.rotationQuaternion = Quaternion.RotationYawPitchRoll(rotation, 0, -Math.PI / 2);
     }
 
     destination: Vector2;
@@ -60,11 +59,11 @@ export class Car extends ModelEntity {
             let progress: Vector2;
             if (easePerc < 0.5) {
                 progress = change.multiply(new Vector2(0, easePerc * 2));
-                if (destination.y > 0) this.setRotation(Math.PI);
-                else this.setRotation(0);
+                if (destination.y > 0) this.setRotation(0);
+                else this.setRotation(Math.PI);
             } else {
-                if (destination.x > 0) this.setRotation(-Math.PI / 2);
-                else this.setRotation(Math.PI/2);
+                if (destination.x > 0) this.setRotation(Math.PI / 2);
+                else this.setRotation(-Math.PI/2);
                 progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
             }
             let pos = houseDoorWayVector.add(progress);
@@ -81,12 +80,12 @@ export class Car extends ModelEntity {
             let progress: Vector2;
             if (easePerc > 0.5) {
                 progress = change.multiply(new Vector2(2 * easePerc - 1, 1));
-                if (change.x > 0) this.setRotation(Math.PI / 2);
-                else this.setRotation(-Math.PI / 2);
+                if (change.x > 0) this.setRotation(-Math.PI / 2);
+                else this.setRotation(Math.PI / 2);
             } else {
                 progress = change.multiply(new Vector2(0, easePerc * 2));
-                if (change.y > 0) this.setRotation(0);
-                else this.setRotation(Math.PI);
+                if (change.y > 0) this.setRotation(Math.PI);
+                else this.setRotation(0);
             }
             let pos = houseDoorWayVector.add(progress);
             this.setPosition(pos);

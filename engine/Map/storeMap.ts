@@ -1,11 +1,14 @@
 import { UiSystem } from '../System/uiSystem';
-import { Store, StoreData } from '../Entity/store';
+import { Store, StoreData, storeCategories } from '../Entity/store';
 import { Car } from '../Entity/car';
 import { Ground } from './Ground';
 import { ModalUI } from '../Ui/modal';
 import { TileMap } from './tileMap';
 
 import { Vector2 } from '@babylonjs/core/Maths/math';
+import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
+import find from 'lodash/find';
 
 import stores from '../../asset/stores.json';
 
@@ -29,6 +32,42 @@ export class StoreMap {
         this.modal = modal;
         this.tileMap = tileMap;
         this.car = car;
+
+        this.loadBaseModel();
+        this.loadStoresModel();
+    }
+
+    base: Array<Mesh> = [];
+    baseCat = {};
+    loadBaseModel() {
+        let url = this.system.assetUrl + 'commerce_txtr.gltf';
+        this.system.loader.loadModel(url, '', (success, model) => {
+            this.base = model.loadedMeshes;
+            for (let i = 0; i < this.base.length; i++) {
+                const mesh = this.base[i];
+                mesh.isVisible = false;
+                mesh.scaling.x = 10;
+                mesh.scaling.y = 10;
+                mesh.scaling.z = 10;
+            }
+            for (let i = 0; i < storeCategories.length; i++) {
+                const storeType = storeCategories[i];
+                let cloned = this.base[1].clone();
+                cloned.material = this.base[1].material.clone('');
+                cloned.material.albedoColor = storeType.color;
+                this.baseCat[storeType.type] = cloned;
+            }
+        });
+    }
+
+    storesModel = {};
+    loadStoresModel() {
+        for (let i = 0; i < storeCategories.length; i++) {
+            const storeType = storeCategories[i];
+            this.system.loadModel(storeType.model, (model) => {
+                this.storesModel[storeType.type] = model[0];
+            });
+        }
     }
 
     center = Vector2.Zero();
@@ -45,8 +84,8 @@ export class StoreMap {
     }
 
     hideCurrentStores() {
-        for (let i = 0; i < this.storeModels.length; i++) {
-            const storeModel = this.storeModels[i];
+        for (let i = 0; i < this.storesList.length; i++) {
+            const storeModel = this.storesList[i];
             storeModel.hideAnim();
         }
     }
@@ -92,25 +131,60 @@ export class StoreMap {
         return storesLimit;
     }
 
-    storeModels: Array<Store> = [];
+    getBase(type: string): Array<Mesh> {
+        let storeType = find(storeCategories, (s) => { return type.indexOf(s.type) != -1 });
+        let baseMeshes = [];
+        for (let i = 0; i < this.base.length; i++) {
+            let newMesh = this.base[i].createInstance('');
+            baseMeshes.push(newMesh);
+        }
+        baseMeshes[0].dispose();
+        baseMeshes[0] = this.baseCat[storeType.type].createInstance('');
+        return baseMeshes;
+    }
+
+    getProduct(type: string): TransformNode {
+        let storeType = find(storeCategories, (s) => { return type.indexOf(s.type) != -1 });
+        
+        let parent = this.storesModel[storeType.type];
+        let parentMesh = this.system.groupInstance(parent)
+        
+        parentMesh.position.y = 2;
+        parentMesh.scaling.x = 4 * storeType.scale;
+        parentMesh.scaling.y = 4 * storeType.scale;
+        parentMesh.scaling.z = -4 * storeType.scale;
+        return parentMesh;
+    }
+
+    storesList: Array<Store> = [];
     addStoresModels(stores: Array<StoreData>) {
         let j = 0;
         for (let i = 0; i < stores.length; i++) {
-            let newStore = new Store(this.system, this.modal, this.car);
             let store = stores[i];
-            newStore.setData(store);
-            this.storeModels.push(newStore);
-            // Removed timeout to avoid stop rendering wich create lag
-            // setTimeout(() => {
-            this.storeModels[i].show();
-            // this.storeModels[i].showAnim();
-            // j++;
-            // if (j == this.maxStores) this.system.updateShadows();
-            // }, i * 200);
+            let storeType = find(storeCategories, (s) => { return store.cat.indexOf(s.type) != -1 });
+            if (!storeType) {
+                console.log('missing ' + store.cat)
+            } else {
+                let newStore = new Store(this.system, this.modal, this.car);
+                let base = this.getBase(store.cat);
+                newStore.addMeshes(base);
+                let product = this.getProduct(store.cat);
+                newStore.addProduct(product);
+                newStore.setData(store);
+                this.storesList.push(newStore);
+                // Removed timeout to avoid stop rendering wich create lag
+                // setTimeout(() => {
+                this.storesList[i].show();
+                // this.storesList[i].showAnim();
+                // j++;
+                // if (j == this.maxStores) this.system.updateShadows();
+                // }, i * 200);
+            }
         }
         this.system.checkActiveMeshes();
         setTimeout(() => {
+            this.system.checkActiveMeshes();
             this.system.updateShadows();
-        }, 2000);
+        }, 100);
     }
 }

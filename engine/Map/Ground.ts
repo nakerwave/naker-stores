@@ -97,9 +97,13 @@ export class Ground {
     grassModel: Mesh;
     bushModel: Mesh;
     loadDecor() {
-        this.system.loadModel('low_poly_trees_grass_and_rocks/scene.gltf', (model) => {
-            for (let i = 0; i < model.length; i++) {
-                const mesh = model[i];
+        let url = this.system.assetUrl + 'low_poly_trees_grass_and_rocks/scene.gltf'; 
+        this.system.loader.loadModel(url, '', (success, model) => {
+            if (!success) return;
+
+            let meshes = model.loadedMeshes;
+            for (let i = 0; i < meshes.length; i++) {
+                const mesh = meshes[i];
                 // console.log(mesh.name);
                 // if (mesh.parent) console.log(mesh.parent.name);
                 if (mesh.name == 'Tree1_Tree1_2.001_0') {
@@ -244,43 +248,43 @@ export class Ground {
         treeGroupParent.position.z = randomPos.y;
         this.treeGroups.push(treeGroupParent);
         for (let i = 0; i < 2; i++) {
-            let mesh = this.addTree(treeGroupParent);
+            this.addTree(treeGroupParent);
         }
         for (let i = 0; i < 2; i++) {
-            let mesh = this.addRock(treeGroupParent);
+            this.addRock(treeGroupParent);
         }
         for (let i = 0; i < 2; i++) {
-            let mesh = this.addGrass(treeGroupParent);
+            this.addGrass(treeGroupParent);
         }
         for (let i = 0; i < 2; i++) {
-            let mesh = this.addBush(treeGroupParent);
+            this.addBush(treeGroupParent);
         }
     }
 
     addTree(parent: TransformNode): Mesh {
-        // let tree = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
-        let tree = this.treeModel.clone('tree');
+        let tree = this.system.groupInstance(this.treeModel);
+        // let tree = this.treeModel.clone('tree');
         this.addGroundMesh(tree, parent);
         return tree;
     }
 
     addRock(parent: TransformNode): Mesh {
-        // let rock = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
-        let rock = this.rockModel.clone('rock');
+        let rock = this.system.groupInstance(this.rockModel);
+        // let rock = this.rockModel.clone('rock');
         this.addGroundMesh(rock, parent);
         return rock;
     }
 
     addGrass(parent: TransformNode): Mesh {
-        // let grass = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
-        let grass = this.grassModel.clone('grass');
+        let grass = this.system.groupInstance(this.grassModel);
+        // let grass = this.grassModel.clone('grass');
         this.addGroundMesh(grass, parent);
         return grass;
     }
 
     addBush(parent: TransformNode): Mesh {
-        // let bush = this.system.groupInstance(this.treeModel, 'tree' + i.toString());
-        let bush = this.bushModel.clone('bush');
+        let bush = this.system.groupInstance(this.bushModel);
+        // let bush = this.bushModel.clone('bush');
         this.addGroundMesh(bush, parent);
         return bush;
     }
