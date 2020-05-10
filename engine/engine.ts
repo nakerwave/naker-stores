@@ -11,6 +11,7 @@ import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
 import { TouchCatcher } from '@naker/services/Catchers/touchCatcher';
 import { setStyle } from 'redom';
 import { TileMap } from './Map/tileMap';
+import { LegendUI } from './Ui/legend';
 
 // Ajouter flèche sur les côtés
 // Temps de trajet pour aller au magasins
@@ -33,6 +34,7 @@ export class GameEngine {
     ground: Ground;
     tileMap: TileMap;
     searchInput: SearchUI;
+    legendUI: LegendUI;
     modal: ModalUI;
     storeMap: StoreMap;
     pipeline: Pipeline;
@@ -50,9 +52,11 @@ export class GameEngine {
         // this.pipeline.setFocalDistance(-1);
         
         this.modal = new ModalUI();
+        this.legendUI = new LegendUI(this.system);
         this.searchInput = new SearchUI(this.modal);
         this.searchInput.onResult = (latlng: Array<number>) => {
             this.storeMap.updateStores(latlng);
+            this.legendUI.show();
         };
         
         this.house = new House(this.system);
@@ -66,6 +70,7 @@ export class GameEngine {
             this.storeMap.updateStores([-1.414176, 48.680365]);
             this.modal.setStart([-1.414176, 48.680365]);
             setStyle(this.searchInput.form, { top: '-30px' });
+            this.legendUI.show();
         }, 5000);
         
         // this.system.camera.attachControl(gameOptions.canvas);

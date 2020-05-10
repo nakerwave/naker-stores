@@ -22,6 +22,8 @@ export interface StoreInterface {
     color: Color3;
     model: string;
     scale: number;
+    ingredientList: string;
+    legendImage: string;
 };
 
 export interface StoreData {
@@ -38,42 +40,56 @@ export let storeCategories: Array < StoreInterface > = [
         color: new Color3(1, 0, 0),
         model: 'panier2.gltf',
         scale: 0.8,
+        ingredientList: 'Ferme_Epicerie',
+        legendImage: 'grocery.JPG',
     },
     {
         type: 'cheese',
         color: new Color3(1, 1, 0),
         model: 'Lait.glb',
         scale: 0.6,
+        ingredientList: 'Fromager_Crémier',
+        legendImage: 'milk.JPG',
     },
     {
         type: 'seafood',
         color: new Color3(0, 0, 1),
         model: 'Poisson2.glb',
         scale: 0.2,
+        ingredientList: 'Poissonnier',
+        legendImage: 'fish.JPG',
     },
     {
         type: 'greengrocer beverages',
         color: new Color3(0, 0.7, 0),
         model: 'Legumes_bqt.gltf',
         scale: 1.3,
+        ingredientList: 'Primeur',
+        legendImage: 'vegetables.JPG',
     },
     {
         type: 'wine alcohol',
         color: new Color3(0.5, 0, 0),
         model: 'Vin.glb',
         scale: 0.6,
+        ingredientList: 'Cave à bière_Cave à vin_Vente de liqueur',
+        legendImage: 'alcohol.JPG',
     },
     {
         type: 'pastry bakery',
         color: new Color3(0.5, 0.3, 0),
         model: 'Pain4.gltf',
         scale: 0.4,
+        ingredientList: 'Boulangerie_Patisserie',
+        legendImage: 'bakery.JPG',
     },
     {
         type: 'butcher',
         color: new Color3(1, 0.9, 0.9),
         model: 'Viande.glb',
         scale: 0.8,
+        ingredientList: 'Boucher',
+        legendImage: 'butcher.JPG',
     },
 ];
 
