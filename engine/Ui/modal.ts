@@ -72,10 +72,7 @@ export class ModalUI {
         req.open('GET', url, true);
         req.onload = () => {
             var json = JSON.parse(req.response);
-            console.log(json);
             let adresse = json.features[0].place_name;
-            console.log(adresse);
-            
             this.adresse.textContent = 'Adresse: ' + adresse;
         };
         req.send();
@@ -94,8 +91,6 @@ export class ModalUI {
         req.open('GET', url, true);
         req.onload = () => {
             var json = JSON.parse(req.response);
-            console.log(json);
-            
             var data = json.routes[0];
             var route = data.geometry.coordinates;
 
@@ -115,7 +110,6 @@ export class ModalUI {
                 this.map.getSource('route').setData(geojson);
                 this.fitMapToLine(geojson)
             } else { // otherwise, make a new request
-                console.log('addLayer');
                 this.fitMapToLine(geojson)
                 
                 this.map.addLayer({

@@ -13,6 +13,7 @@ import { Scene } from '@babylonjs/core/scene'
 import { EasingFunction, CubicEase, } from '@babylonjs/core/Animations/easing';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
+import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents';
 
 import grassAlbedoTexture from '../../asset/grass1.png';
 import grassNormalTexture from '../../asset/grassnorm1.png';
@@ -53,14 +54,65 @@ export class Ground {
         this.addGround();
         this.setEvents(mouseCatcher);
         this.setCameraRotation(Vector2.Zero());
+        this.addDragAndDrop();
+    }
 
-        window.addEventListener("mousemove", (evt: Event) =>{
-            this.checkEdgeMove(evt);
+    drag = false;
+    dragStart = Vector2.Zero();
+    targetStart = Vector3.Zero();
+    addDragAndDrop() {
+
+        window.addEventListener('mouseout', (evt: Event) => {
+            console.log('up');
+            this.drag = false;
         });
 
-        window.addEventListener("mouseout", (evt: Event) => {
-            this.stopCameraMove();
+        this.system.scene.onPointerObservable.add((pointerInfo) => {
+            let evt = pointerInfo.event;		
+            switch (pointerInfo.type) {
+                case PointerEventTypes.POINTERDOWN:
+                        this.startDrag(evt);
+                    break;
+                case PointerEventTypes.POINTERUP:
+                        this.stopDrag();
+                    break;
+                case PointerEventTypes.POINTERMOVE:          
+                        if (this.drag) this.dragMove(evt);
+                    break;
+            }
         });
+    }
+
+    startDrag(evt: Event) {
+        this.drag = true;
+        this.target = this.system.camera.target.clone();
+        this.dragStart.x = evt.clientX;
+        this.dragStart.y = evt.clientY;
+        this.animation.infinite((count, perc) => {
+            if (Math.abs(this.target.x) <= 20) this.target.x += perc * change.x;
+            if (Math.abs(this.target.z) <= 20) this.target.z += perc * change.y;
+            this.system.camera.setTarget(this.target.clone());
+        });
+    }
+
+    stopDrag() {
+        this.drag = false;
+        this.animation.stop();
+    }
+
+    target: Vector3;
+    dragMove(evt: Event) {
+        let newDragPos = new Vector2(evt.clientX, evt.clientY);
+        let change = newDragPos.subtract(this.dragStart);
+        // let newTarget = this.targetStart.add(new Vector3(change.x, 0, change.y));
+console.log('change');
+
+        this.animation.simple(100, (count, perc) => {
+            if (Math.abs(this.target.x) <= 20) this.target.x += perc * change.x;
+            if (Math.abs(this.target.z) <= 20) this.target.z += perc * change.y;
+            this.system.camera.setTarget(this.target.clone());
+        });
+        // this.system.camera.setTarget(newTarget);
     }
 
     ground: Mesh;
@@ -137,45 +189,6 @@ export class Ground {
             this.system.updateShadows();
             this.tileMap.resetGridSpot();
             this.moveTreeGroup();
-        });
-    }
-
-    movingStep = Vector2.Zero();
-    target = Vector3.Zero();
-    step = 1;
-    stepMax = 2;
-    screenGap = 50;
-    sceneGap = 100;
-    cameraMoving = false;
-    checkEdgeMove(evt: Event) {
-        let point = new Vector2(evt.clientX, evt.clientY);
-        let width = this.system.engine.getRenderWidth();
-        let height = this.system.engine.getRenderHeight();
-        let step = Vector2.Zero();
-        
-        if (point.x < this.screenGap) step.x = -this.step;
-        if (point.x > width - this.screenGap) step.x = this.step;
-        if (point.y < this.screenGap * 3) step.y = this.step;
-        if (point.y > height - this.screenGap) step.y = -this.step;
-        
-        if (step.x || step.y) {
-            this.movingStep.y = step.y;
-            this.movingStep.x = step.x;
-            if (!this.cameraMoving) this.startCameraMove();
-            this.cameraMoving = true;
-        } else {
-            this.stopCameraMove();
-        }
-    }
-
-    startCameraMove() {
-        // To make suse it will start if went to far
-        this.target.x = Math.max(Math.min(this.target.x, 20), -20);
-        this.target.z = Math.max(Math.min(this.target.z, 20), -20);
-        this.animation.simple(100, (count, perc) => {
-            if (Math.abs(this.target.x) <= 20) this.target.x += perc * this.movingStep.x;
-            if (Math.abs(this.target.z) <= 20) this.target.z += perc * this.movingStep.y;
-            this.system.camera.setTarget(this.target);
         });
     }
 
