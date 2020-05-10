@@ -17,7 +17,6 @@ import { TileMap } from './Map/tileMap';
 // Au départ on ne comprend pas le but: ajouter une phrase d'accroche
 // Voir ajouter dragandrop pour déplacer la carte
 // Avoir une légende pour comprendre ce qu'on vend dans les magasins
-// Afficher l'adresse exacte et la distance
 // Si possible horaire d'ouverture et numéro de téléphone
 // Avoir voiture, vélo et bonhome pour avoir un indicateur de distance
 
@@ -63,11 +62,11 @@ export class GameEngine {
         this.ground = new Ground(this.system, this.tileMap, this.mouseCatcher);
         this.storeMap = new StoreMap(this.system, this.tileMap, this.ground, this.car, this.modal);
 
-        // setTimeout(() => {
-        //     this.storeMap.updateStores([-1.414176, 48.680365]);
-        //     this.modal.setStart([-1.414176, 48.680365]);
-        //     setStyle(this.searchInput.form, { top: '-30px' });
-        // }, 5000);
+        setTimeout(() => {
+            this.storeMap.updateStores([-1.414176, 48.680365]);
+            this.modal.setStart([-1.414176, 48.680365]);
+            setStyle(this.searchInput.form, { top: '-30px' });
+        }, 5000);
         
         // this.system.camera.attachControl(gameOptions.canvas);
  
@@ -95,7 +94,6 @@ export class GameEngine {
         let test = 0;
         this.system.scene.registerBeforeRender(() => {
             let fps = this.system.engine.getFps();
-            console.log(fps, test);
             if ( fps < 50 ) test ++;
             else test = 0;
             if ( test > 40 ) {

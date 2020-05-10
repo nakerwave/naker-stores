@@ -10,7 +10,7 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 import find from 'lodash/find';
 
-import stores from '../../asset/stores.json';
+import stores from '../../asset/stores2.json';
 
 /**
  * Manage all the essential assets needed to build a 3D scene (Engine, Scene Cameras, etc)
@@ -97,10 +97,13 @@ export class StoreMap {
     }
 
     maxStores = 20;
+    maxStoreByType = 3;
     searchDistance = 0.3;
     ratioDistance = 50;
     getStoresInBox(latlng: Array<number>): Array<StoreData> {
         let storesInBox = [];
+
+        // Get all closest stores
         for (let i = 0; i < stores.length; i++) {
             const store = stores[i];
             let xDist = store.lon - latlng[0];
@@ -113,13 +116,29 @@ export class StoreMap {
             }
         }
 
+        // Sort by Distance
         let storesSorted = storesInBox.sort((a, b) => {
             return a.distance - b.distance;
         });
-        let storesLimit = storesSorted.splice(0, this.maxStores);
+
+        // Limit number by Type
+        let storeTypeNumber = {};
+        let storesByTpeLimit = [];
+        for (let i = 0; i < storesSorted.length; i++) {
+            const store = storesSorted[i];
+            let storeType = this.getStoreType(store.cat);
+            let type = storeType.type;
+            if (!storeTypeNumber[type]) storeTypeNumber[type] = 1;
+            else storeTypeNumber[type]++;
+            if (storeTypeNumber[type] <= this.maxStoreByType) storesByTpeLimit.push(store);
+        }
+
+        // Limit total number of stores
+        let storesLimit = storesByTpeLimit.splice(0, this.maxStores);
         let furthestStore = storesLimit[storesLimit.length - 1];
         let furthestDistance = furthestStore.distance;
         
+        // Update coordinates to keep the same distance ratio
         let ratioVector = new Vector2(this.ratioDistance / furthestDistance, this.ratioDistance / furthestDistance);
         for (let i = 0; i < storesLimit.length; i++) {
             const store = storesLimit[i];
@@ -128,8 +147,12 @@ export class StoreMap {
         return storesLimit;
     }
 
+    getStoreType(type: string) {
+        return find(storeCategories, (s) => { return s.type.indexOf(type) != -1 });
+    }
+
     getBase(type: string): Array<Mesh> {
-        let storeType = find(storeCategories, (s) => { return type.indexOf(s.type) != -1 });
+        let storeType = this.getStoreType(type);
         let baseMeshes = [];
         for (let i = 0; i < this.base.length; i++) {
             let mesh = this.base[i].createInstance('');
@@ -143,8 +166,7 @@ export class StoreMap {
     }
 
     getProduct(type: string): TransformNode {
-        let storeType = find(storeCategories, (s) => { return type.indexOf(s.type) != -1 });
-        
+        let storeType = this.getStoreType(type);
         let parent = this.storesModel[storeType.type];
         let parentMesh = this.system.groupInstance(parent)
         
@@ -160,7 +182,7 @@ export class StoreMap {
         let j = 0;
         for (let i = 0; i < stores.length; i++) {
             let store = stores[i];
-            let storeType = find(storeCategories, (s) => { return store.cat.indexOf(s.type) != -1 });
+            let storeType = this.getStoreType(store.cat);
             if (!storeType) {
                 console.log('missing ' + store.cat)
             } else {

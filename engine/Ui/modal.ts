@@ -23,12 +23,21 @@ export class ModalUI {
 
     mapEl: HTMLElement;
     modal: HTMLElement;
+    name: HTMLElement;
+    adresse: HTMLElement;
+    distance: HTMLElement;
+    time: HTMLElement;
     addModal() {
         this.modal = el('div.modal-background', {onclick: () => {this.hide(); }},
             el('div.modal',
                 [
-                    el('h1', 'Voici comment y aller!'),
+                    this.name = el('h1', 'Voici comment y aller!'),
                     this.mapEl = el('div.map', { id: 'mapbox' }),
+                    el('div.map', [
+                        this.adresse = el('h2'),
+                        this.distance = el('h2'),
+                        this.time = el('h2')
+                    ]),
                 ]
             )
         );
@@ -36,11 +45,12 @@ export class ModalUI {
 
     }
 
-    show(end: Array<number>) {
+    show(end: Array<number>, name: string) {
         setStyle(this.modal, { display:'block', opacity: 1 });
         this.map.resize();
-        // this.map.setCenter(this.start);
-        let route = this.getRoute(end);
+        this.name.textContent = 'Voici comment aller à ' + name;
+        this.getRoute(end, 'driving');
+        this.getAdresse(end);
     }
 
     hide() {
@@ -56,21 +66,41 @@ export class ModalUI {
         this.map.setCenter(latlng);
     }
 
+    getAdresse(end: Array<number>) {
+        var url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + end[0] + ',' + end[1] + '.json?access_token=' + mapboxgl.accessToken;
+        var req = new XMLHttpRequest();
+        req.open('GET', url, true);
+        req.onload = () => {
+            var json = JSON.parse(req.response);
+            console.log(json);
+            let adresse = json.features[0].place_name;
+            console.log(adresse);
+            
+            this.adresse.textContent = 'Adresse: ' + adresse;
+        };
+        req.send();
+    }
+
     // create a function to make a directions request
-    getRoute(end: Array<number>) {
+    getRoute(end: Array<number>, mode: 'driving' | 'cycling' | 'walking') {
         // make a directions request using cycling profile
         // an arbitrary start will always be the same
         // only the end or destination will change
 
-        var url = 'https://api.mapbox.com/directions/v5/mapbox/cycling/' + this.start[0] + ',' + this.start[1] + ';' + end[0] + ',' + end[1] + '?steps=true&geometries=geojson&access_token=' + mapboxgl.accessToken;
+        var url = 'https://api.mapbox.com/directions/v5/mapbox/' + mode + '/' + this.start[0] + ',' + this.start[1] + ';' + end[0] + ',' + end[1] + '?steps=true&geometries=geojson&access_token=' + mapboxgl.accessToken;
 
         // make an XHR request https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
         var req = new XMLHttpRequest();
         req.open('GET', url, true);
         req.onload = () => {
             var json = JSON.parse(req.response);
+            console.log(json);
+            
             var data = json.routes[0];
             var route = data.geometry.coordinates;
+
+            this.distance.textContent = 'Distance: '+ Math.round(data.distance/1000) + 'km';
+            this.time.textContent = 'Durée: ' + Math.round(data.duration / 60) + 'min';
             
             var geojson = {
                 type: 'Feature',

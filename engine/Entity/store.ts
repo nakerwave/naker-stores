@@ -34,13 +34,7 @@ export interface StoreData {
 
 export let storeCategories: Array < StoreInterface > = [
     {
-        type: 'farm',
-        color: new Color3(1, 0, 0),
-        model: 'panier2.gltf',
-        scale: 0.8,
-    },
-    {
-        type: 'garden_center',
+        type: 'garden_center farm',
         color: new Color3(1, 0, 0),
         model: 'panier2.gltf',
         scale: 0.8,
@@ -58,34 +52,28 @@ export let storeCategories: Array < StoreInterface > = [
         scale: 0.2,
     },
     {
-        type: 'greengrocer',
+        type: 'greengrocer beverages',
         color: new Color3(0, 0.7, 0),
         model: 'Legumes_bqt.gltf',
         scale: 1.3,
     },
     {
-        type: 'wine',
+        type: 'wine alcohol',
         color: new Color3(0.5, 0, 0),
         model: 'Vin.glb',
         scale: 0.6,
     },
     {
-        type: 'pastry',
+        type: 'pastry bakery',
         color: new Color3(0.5, 0.3, 0),
         model: 'Pain4.gltf',
         scale: 0.4,
     },
     {
-        type: 'beverages',
-        color: new Color3(1, 0, 1),
-        model: 'Legumes_bqt.gltf',
-        scale: 1.3,
-    },
-    {
         type: 'butcher',
         color: new Color3(1, 0.9, 0.9),
         model: 'Viande.glb',
-        scale: 1,
+        scale: 0.8,
     },
 ];
 
@@ -130,7 +118,7 @@ export class Store extends ModelEntity {
 
     setEvent() {
         this.on('click', () => {
-            this.modal.show(this.latlng);
+            this.modal.show(this.latlng, this.name);
         });
         this.on('enter', () => {
             this.launchRotateAnimation();            
@@ -182,10 +170,12 @@ export class Store extends ModelEntity {
     }
 
     type: string;
+    name: string;
     latlng: Array<number>;
     storeParent: TransformNode;
     setStore(type: string, name: string, latlng: Array<number>) {
         this.type = type;
+        this.name = name;
         this.latlng = latlng;
         this.setLabelText(name);
     }
