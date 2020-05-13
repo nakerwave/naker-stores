@@ -34,10 +34,12 @@ export class Ground {
     animation: Animation;
     fogAnimation: Animation;
     tileMap: TileMap;
+    mouseCatcher: MouseCatcher;
 
     constructor(system: MeshSystem, tileMap: TileMap, mouseCatcher: MouseCatcher) {
         this.system = system;
         this.tileMap = tileMap;
+        this.mouseCatcher = mouseCatcher;
         this.animation = new Animation(this.system);
         this.fogAnimation = new Animation(this.system);
 
@@ -57,62 +59,86 @@ export class Ground {
         this.addDragAndDrop();
     }
 
-    drag = false;
-    dragStart = Vector2.Zero();
-    targetStart = Vector3.Zero();
-    addDragAndDrop() {
-
-        window.addEventListener('mouseout', (evt: Event) => {
-            console.log('up');
-            this.drag = false;
+    sensitivity = 1;
+    sensitivityRatio = 20;
+    realSensitivity = 1;
+    setEvents(mouseCatcher: MouseCatcher) {
+        mouseCatcher.addListener((mousePosition: Vector2) => {
+            if (this.drag) this.setCameraTarget(mousePosition);
+            if (this.sensitivity != 0) this.setCameraRotation(mousePosition);
         });
 
+        this.system.on(EventsName.Resize, (ratio) => {
+            this.checkSensitivity(ratio);
+        });
+    }
+
+    maxRatio = 0.1;
+    checkSensitivity(ratio: number) {
+        ratio = Math.abs(ratio);
+        let ratioS = Math.pow(1 + ratio, 2);
+        this.realSensitivity = this.sensitivity * this.sensitivityRatio / ratioS;
+    }
+
+    setCameraRotation(mousePosition: Vector2) {
+        let newRot = new Vector2(mousePosition.y / 20, mousePosition.x / 20);
+        this.system.camera.alpha = -0.1 * newRot.y * this.realSensitivity - Math.PI / 2;
+        this.system.camera.beta = -0.1 * newRot.x * this.realSensitivity + Math.PI / 4;
+    }
+
+    pixelRatio = 40;
+    maxGap = 50;
+    startMousePosition = Vector2.Zero();
+    currentTarget: Vector3;
+    startTarget: Vector3;
+    currentPosition: Vector3;
+    startPosition: Vector3;
+    setCameraTarget(mousePosition: Vector2) {
+        let newPos = new Vector2(-mousePosition.x * this.pixelRatio, mousePosition.y * this.pixelRatio);
+        if (!this.startMousePosition) this.startMousePosition = newPos.clone();
+        let change = newPos.subtract(this.startMousePosition);
+
+        if (Math.abs(this.currentTarget.x + change.x) <= this.maxGap) {
+            this.currentTarget.x = this.startTarget.x + change.x;           
+            this.currentPosition.x = this.startPosition.x + change.x;
+        }
+        if (Math.abs(this.currentTarget.z + change.y) <= this.maxGap) {
+            this.currentTarget.z = this.startTarget.z + change.y;           
+            this.currentPosition.z = this.startPosition.z + change.y;
+        }
+        this.system.camera.setTarget(this.currentTarget);
+        this.system.camera.setPosition(this.currentPosition);
+    }
+
+    drag = false;
+    addDragAndDrop() {
         this.system.scene.onPointerObservable.add((pointerInfo) => {
-            let evt = pointerInfo.event;		
             switch (pointerInfo.type) {
                 case PointerEventTypes.POINTERDOWN:
-                        this.startDrag(evt);
+                        this.startDrag();
                     break;
                 case PointerEventTypes.POINTERUP:
                         this.stopDrag();
-                    break;
-                case PointerEventTypes.POINTERMOVE:          
-                        if (this.drag) this.dragMove(evt);
                     break;
             }
         });
     }
 
-    startDrag(evt: Event) {
+    startDrag() {
+        this.mouseCatcher.animation.stop();
         this.drag = true;
-        this.target = this.system.camera.target.clone();
-        this.dragStart.x = evt.clientX;
-        this.dragStart.y = evt.clientY;
-        this.animation.infinite((count, perc) => {
-            if (Math.abs(this.target.x) <= 20) this.target.x += perc * change.x;
-            if (Math.abs(this.target.z) <= 20) this.target.z += perc * change.y;
-            this.system.camera.setTarget(this.target.clone());
-        });
+        this.startMousePosition = null;
+        this.currentTarget = this.system.camera.target.clone();
+        this.startTarget = this.system.camera.target.clone();
+
+        this.currentPosition = this.system.camera.position.clone();
+        this.startPosition = this.system.camera.position.clone();
     }
 
     stopDrag() {
-        this.drag = false;
-        this.animation.stop();
-    }
-
-    target: Vector3;
-    dragMove(evt: Event) {
-        let newDragPos = new Vector2(evt.clientX, evt.clientY);
-        let change = newDragPos.subtract(this.dragStart);
-        // let newTarget = this.targetStart.add(new Vector3(change.x, 0, change.y));
-console.log('change');
-
-        this.animation.simple(100, (count, perc) => {
-            if (Math.abs(this.target.x) <= 20) this.target.x += perc * change.x;
-            if (Math.abs(this.target.z) <= 20) this.target.z += perc * change.y;
-            this.system.camera.setTarget(this.target.clone());
-        });
-        // this.system.camera.setTarget(newTarget);
+        // setTimeout(() => {
+            this.drag = false;
+        // }, 200);
     }
 
     ground: Mesh;
@@ -190,11 +216,6 @@ console.log('change');
             this.tileMap.resetGridSpot();
             this.moveTreeGroup();
         });
-    }
-
-    stopCameraMove() {
-        this.animation.stop();
-        this.cameraMoving = false;
     }
 
     newDecor(callback: Function) {
@@ -324,34 +345,5 @@ console.log('change');
 
     getRandomPosition(ratio: number): Vector2 {
         return new Vector2((Math.random() - 0.5) * mapSize * ratio, (Math.random() - 0.5) * mapSize * ratio);
-    }
-
-    sensitivity = 1;
-    sensitivityRatio = 20;
-    realSensitivity = 1;
-    setEvents(mouseCatcher: MouseCatcher) {
-        mouseCatcher.addListener((mousepos: Vector2) => {
-            if (this.sensitivity != 0) {
-                let newrot = new Vector2(mousepos.y / 10, mousepos.x / 10);
-                this.setCameraRotation(newrot);
-            }
-        });
-
-        this.system.on(EventsName.Resize, (ratio) => {
-            this.checkSensitivity(ratio);
-        });
-    }
-
-    maxRatio = 0.1;
-    checkSensitivity(ratio: number) {
-        ratio = Math.abs(ratio);
-        let ratioS = Math.pow(1 + ratio, 2);
-        this.realSensitivity = this.sensitivity * this.sensitivityRatio / ratioS;
-    }
-
-    mousePosition = new Vector2(0, 0);
-    setCameraRotation(rot: Vector2) {
-        this.system.camera.alpha = -0.1 * rot.y * this.realSensitivity - Math.PI / 2;
-        this.system.camera.beta = -0.1 * rot.x * this.realSensitivity + Math.PI / 4;
     }
 }
