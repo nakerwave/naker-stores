@@ -50,7 +50,7 @@ export class MeshEntity extends PositionEntity {
     showAnim(callback?: Function) {
         // this.mesh.isVisible = true;
         this.scaleMesh(0);
-        this.animation.simple(this.showAnimLength, (count, perc) => {
+        this.animation.simple(this.showAnimLength, (perc) => {
             let easePerc = this.showCurve.ease(perc);
             this.scaleMesh(easePerc * this.size);
         }, () => {
@@ -60,7 +60,7 @@ export class MeshEntity extends PositionEntity {
     }
 
     hideAnim(callback?: Function) {
-        this.animation.simple(this.showAnimLength, (count, perc) => {
+        this.animation.simple(this.showAnimLength, (perc) => {
             let easePerc = this.showCurve.ease(perc);
             this.scaleMesh((1 - easePerc) * this.size);
         }, () => {

@@ -1,6 +1,6 @@
-import { MouseCatcher } from '@naker/services/Catchers/mouseCatcher';
+import { MouseCatcher, MouseEvent } from '@naker/services/Catchers/mouseCatcher';
 import { Animation } from '@naker/services/System/systemAnimation';
-import { EventsName } from '@naker/services/Tools/observable';
+import { SystemEvent } from '@naker/services/System/system';
 
 import { MeshSystem } from '../System/meshSystem';
 import { TileMap } from './tileMap';
@@ -63,12 +63,12 @@ export class Ground {
     sensitivityRatio = 20;
     realSensitivity = 1;
     setEvents(mouseCatcher: MouseCatcher) {
-        mouseCatcher.addListener((mousePosition: Vector2) => {
+        mouseCatcher.on(MouseEvent.Progress, (mousePosition: Vector2) => {
             if (this.drag) this.setCameraTarget(mousePosition);
             if (this.sensitivity != 0) this.setCameraRotation(mousePosition);
         });
 
-        this.system.on(EventsName.Resize, (ratio) => {
+        this.system.on(SystemEvent.Resize, (ratio) => {
             this.checkSensitivity(ratio);
         });
     }
@@ -239,7 +239,7 @@ export class Ground {
     }
 
     showFog(callback?: Function) {
-        this.fogAnimation.simple(50, (count, perc) => {
+        this.fogAnimation.simple(50, (perc) => {
             let easePerc = this.cameraMove.ease(perc);
             this.system.scene.fogDensity = easePerc;
         }, () => {
@@ -248,7 +248,7 @@ export class Ground {
     }
 
     hideFog(callback?: Function) {
-        this.fogAnimation.simple(50, (count, perc) => {
+        this.fogAnimation.simple(50, (perc) => {
             let easePerc = this.cameraMove.ease(perc);
             this.system.scene.fogDensity = 1 - easePerc;
         }, () => {
@@ -258,7 +258,7 @@ export class Ground {
 
     animFog(halfcallback: Function, callback?: Function) {
         let test = false;
-        this.fogAnimation.simple(100, (count, perc) => {
+        this.fogAnimation.simple(100, (perc) => {
             this.system.scene.fogDensity = Math.min(perc * 2, 2 - perc * 2)/10;
             if (perc > 0.5 && !test) {
                 test = true;

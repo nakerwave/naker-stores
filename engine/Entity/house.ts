@@ -15,12 +15,12 @@ export class House extends ModelEntity {
         super('house', system);
         this.setSize(7);
         this.setPosition(Vector2.Zero());
-        this.setRotation(Math.PI);
+        // this.setRotation(Math.PI);
         this.addModel();
     }
     
     addModel() {
-        this.loadModel('Maison-txtr.gltf', (model) => {
+        this.loadModel('Maison-txtr.gltf', () => {
             this.hide();
         });
     }

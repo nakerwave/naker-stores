@@ -32,15 +32,16 @@ export interface StoreData {
     cat: string;
     lon: number;
     lat: number;
+    distance: number;
 }
 
 export let storeCategories: Array < StoreInterface > = [
     {
-        type: 'garden_center farm',
+        type: 'garden_center farm florist',
         color: new Color3(1, 0, 0),
         model: 'panier2.gltf',
         scale: 0.8,
-        ingredientList: 'Ferme_Epicerie',
+        ingredientList: 'Ferme_Epicerie_fleuriste',
         legendImage: 'grocery.JPG',
     },
     {
@@ -68,7 +69,7 @@ export let storeCategories: Array < StoreInterface > = [
         legendImage: 'vegetables.JPG',
     },
     {
-        type: 'wine alcohol',
+        type: 'wine alcohol biergarten',
         color: new Color3(0.5, 0, 0),
         model: 'Vin.glb',
         scale: 0.6,
@@ -76,18 +77,18 @@ export let storeCategories: Array < StoreInterface > = [
         legendImage: 'alcohol.JPG',
     },
     {
-        type: 'pastry bakery',
+        type: 'pastry bakery chocolate',
         color: new Color3(0.5, 0.3, 0),
         model: 'Pain4.gltf',
         scale: 0.4,
-        ingredientList: 'Boulangerie_Patisserie',
+        ingredientList: 'Boulangerie_Patisserie_chocolatier',
         legendImage: 'bakery.JPG',
     },
     {
         type: 'butcher',
         color: new Color3(1, 0.9, 0.9),
         model: 'Viande.glb',
-        scale: 0.8,
+        scale: 0.7,
         ingredientList: 'Boucher',
         legendImage: 'butcher.JPG',
     },
@@ -138,8 +139,9 @@ export class Store extends ModelEntity {
         });
         this.on('enter', () => {
             this.launchRotateAnimation();            
-            this.showLabel();
+            if (this.name) this.showLabel();
             this.car.setDestination(this.position);
+            this.car.checkTransportMode(this.distance);
         });
         this.on('leave', () => {
             this.stopRotateAnimation();
@@ -169,7 +171,7 @@ export class Store extends ModelEntity {
 
     setData(store: StoreData) {
         this.setPosition(store.position);
-        this.setStore(store.cat, store.name, [store.lon, store.lat]);
+        this.setStore(store.cat, store.name, [store.lon, store.lat], store.distance);
         this.addRoad(store.position);
         this.setEvent();
     }
@@ -188,14 +190,16 @@ export class Store extends ModelEntity {
     type: string;
     name: string;
     latlng: Array<number>;
-    storeParent: TransformNode;
-    setStore(type: string, name: string, latlng: Array<number>) {
+    distance: number;
+    setStore(type: string, name: string, latlng: Array<number>, distance: number) {
         this.type = type;
         this.name = name;
         this.latlng = latlng;
+        this.distance = distance;
         this.setLabelText(name);
     }
-
+    
+    storeParent: TransformNode;
     addProduct(mesh: TransformNode) {
         mesh.parent = this.mesh;
         this.storeParent = mesh;
@@ -204,14 +208,14 @@ export class Store extends ModelEntity {
 
     currentRotation: number;
     launchRotateAnimation() {
-        this.animation.infinite((count, perc) => {
+        this.animation.infinite((perc, count) => {
             this.currentRotation = count / 20 % (Math.PI * 2);
             this.setStoreModelRotation(this.currentRotation);
         });
     }
 
     stopRotateAnimation() {
-        this.animation.simple(50, (count, perc) => {
+        this.animation.simple(50, (perc) => {
             let easePerc = this.showCurve.ease(1 - perc);
             let rotation = easePerc * this.currentRotation;
             this.setStoreModelRotation(rotation);
@@ -224,7 +228,7 @@ export class Store extends ModelEntity {
     }
 
     hideAnim(callback?: Function) {
-        this.animation.simple(this.showAnimLength, (count, perc) => {
+        this.animation.simple(this.showAnimLength, (perc) => {
             let easePerc = this.showCurve.ease(perc);
             this.scaleMesh((1 - easePerc) * this.size);
             this.label.setOpacity(1 - easePerc);

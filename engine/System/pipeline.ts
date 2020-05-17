@@ -1,4 +1,5 @@
 import { System } from './system';
+import { SystemEvent } from '@naker/services/System/system';
 
 import { Camera } from '@babylonjs/core/Cameras/camera';
 // To Enable DepthRendering
@@ -11,7 +12,6 @@ import { EasingFunction, CircleEase } from '@babylonjs/core/Animations/easing';
 import { DepthOfFieldEffectBlurLevel } from '@babylonjs/core/PostProcesses/depthOfFieldEffect';
 import { SSAORenderingPipeline } from '@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/ssaoRenderingPipeline';
 import clone from 'lodash/clone';
-import { EventsName } from '@naker/services/Tools/observable';
 
 export interface pipelineOptions {
     fieldOfView?: number,
@@ -143,17 +143,17 @@ export class Pipeline {
     }
 
     setEvents() {
-        this._system.on(EventsName.Resize, () => {
+        this._system.on(SystemEvent.Resize, () => {
             this.checkDepthOfFieldKernel();
         }, null, true);
 
-        this._system.on(EventsName.Start, () => {
+        this._system.on(SystemEvent.Start, () => {
             this.defaultPipeline.samples = 1;
             this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Low;
             this._setDepthOfFieldKernel(this.kernel);
         }, null, true);
 
-        this._system.on(EventsName.Stop, () => {
+        this._system.on(SystemEvent.Stop, () => {
             this.defaultPipeline.samples = 4;
             this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Medium;
             this._setDepthOfFieldKernel(this.kernel/4);

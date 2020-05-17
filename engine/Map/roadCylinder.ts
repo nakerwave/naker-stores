@@ -38,7 +38,7 @@ export class RoadCylinder {
 
     destination: Vector2;
     setDestination(destination: Vector2) {
-        this.animation.simple(20, (count, perc) => {
+        this.animation.simple(20, (perc) => {
             let easePerc = this.curve.ease(perc);
             let progress = destination.multiply(new Vector2(easePerc, easePerc));
             this.updatePath(progress);
@@ -46,7 +46,7 @@ export class RoadCylinder {
     }
 
     hide() {
-        this.animation.simple(20, (count, perc) => {
+        this.animation.simple(20, (perc) => {
             let easePerc = 1 - this.curve.ease(perc);
             let progress = this.destination.multiply(new Vector2(easePerc, easePerc));
             this.updatePath(progress);

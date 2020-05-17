@@ -13,13 +13,14 @@ import { setStyle } from 'redom';
 import { TileMap } from './Map/tileMap';
 import { LegendUI } from './Ui/legend';
 
-// Ajouter flèche sur les côtés
-// Temps de trajet pour aller au magasins
 // Au départ on ne comprend pas le but: ajouter une phrase d'accroche
-// Voir ajouter dragandrop pour déplacer la carte
-// Avoir une légende pour comprendre ce qu'on vend dans les magasins
 // Si possible horaire d'ouverture et numéro de téléphone
 // Avoir voiture, vélo et bonhome pour avoir un indicateur de distance
+// Text pas trop lisible sur la légende
+// Eventuellement faire show/hide de la légende
+// Bug mobile, besoin de reponsive
+// Filtrer au hover de la légende les magasins ou effet de surbrillance ou faire tourner
+// Ajouter site de Pierre
 
 export interface GameInterface {
     canvas?: HTMLCanvasElement,
@@ -66,12 +67,12 @@ export class GameEngine {
         this.ground = new Ground(this.system, this.tileMap, this.mouseCatcher);
         this.storeMap = new StoreMap(this.system, this.tileMap, this.ground, this.car, this.modal);
 
-        // setTimeout(() => {
-        //     this.storeMap.updateStores([-1.414176, 48.680365]);
-        //     this.modal.setStart([-1.414176, 48.680365]);
-        //     setStyle(this.searchInput.form, { top: '-30px' });
-        //     this.legendUI.show();
-        // }, 5000);
+        setTimeout(() => {
+            this.storeMap.updateStores([-1.414176, 48.680365]);
+            this.modal.setStart([-1.414176, 48.680365]);
+            setStyle(this.searchInput.form, { top: '-30px' });
+            this.legendUI.show();
+        }, 5000);
         
         // this.system.camera.attachControl(gameOptions.canvas);
  

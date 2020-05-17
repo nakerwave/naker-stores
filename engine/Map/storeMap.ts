@@ -127,10 +127,14 @@ export class StoreMap {
         for (let i = 0; i < storesSorted.length; i++) {
             const store = storesSorted[i];
             let storeType = this.getStoreType(store.cat);
-            let type = storeType.type;
-            if (!storeTypeNumber[type]) storeTypeNumber[type] = 1;
-            else storeTypeNumber[type]++;
-            if (storeTypeNumber[type] <= this.maxStoreByType) storesByTpeLimit.push(store);
+            if (storeType) {
+                let type = storeType.type;
+                if (!storeTypeNumber[type]) storeTypeNumber[type] = 1;
+                else storeTypeNumber[type]++;
+                if (storeTypeNumber[type] <= this.maxStoreByType) storesByTpeLimit.push(store);
+            } else {
+                console.log(store.cat);
+            }
         }
 
         // Limit total number of stores
@@ -188,7 +192,7 @@ export class StoreMap {
             } else {
                 let newStore = new Store(this.system, this.modal, this.car);
                 let base = this.getBase(store.cat);
-                newStore.addMeshes(base);
+                newStore.addMeshesToParent(base);
                 let product = this.getProduct(store.cat);
                 newStore.addProduct(product);
                 newStore.setData(store);
