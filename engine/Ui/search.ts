@@ -26,10 +26,11 @@ export class SearchUI {
     loaderEl: HTMLElement;
     searchInput: HTMLElement;
     form: HTMLElement;
+    title: HTMLElement;
     addSearchBar() {
         this.form = el('form.form', { autocomplete: "off", onsubmit: (evt) => { evt.preventDefault(); } },
             [
-                el('h1', 'Trouvez des producteurs proches de chez vous!'),
+                this.title = el('h1', 'Trouvez des producteurs proches de chez vous!'),
                 this.searchInput = el('input.project-name', {
                     type: 'text',
                     placeholder: "Mon adresse",
@@ -63,7 +64,8 @@ export class SearchUI {
             let latlng = geo.center;
             this.onResult(latlng);
             this.modal.setStart(latlng);
-            setStyle(this.form, {top: '-30px'});
+            setStyle(this.title, { height: '0px', opacity: 0 });
+            setStyle(this.form, { top: '30px'});
         };
     }
 

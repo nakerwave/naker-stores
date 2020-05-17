@@ -15,10 +15,7 @@ import { LegendUI } from './Ui/legend';
 
 // Au départ on ne comprend pas le but: ajouter une phrase d'accroche
 // Si possible horaire d'ouverture et numéro de téléphone
-// Avoir voiture, vélo et bonhome pour avoir un indicateur de distance
-// Text pas trop lisible sur la légende
 // Eventuellement faire show/hide de la légende
-// Bug mobile, besoin de reponsive
 // Filtrer au hover de la légende les magasins ou effet de surbrillance ou faire tourner
 // Ajouter site de Pierre
 
@@ -44,6 +41,7 @@ export class GameEngine {
 
     constructor(gameOptions: GameInterface) {
         this.system = new UiSystem(gameOptions.canvas);
+        this.system.setHorizontalFixed(false);
         this.touchCatcher = new TouchCatcher(window);
         this.mouseCatcher = new MouseCatcher(this.system, this.touchCatcher);
         this.mouseCatcher.start();
@@ -90,7 +88,7 @@ export class GameEngine {
                 this.storeMap.loadStoresModel();
 
                 this.pipeline.setFocalLength(10000);
-                this.pipeline.setFocalDistance(90);
+                this.pipeline.setFocalDistance(this.system.cameraDistance);
                 this.pipeline.setVignette([0, 0, 0, 0.2]);
                 this.pipeline.addCamera(this.system.camera);
             }, 1000)

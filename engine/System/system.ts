@@ -86,9 +86,10 @@ export class System extends SystemQuality {
     }
     
     camera: ArcRotateCamera;
+    cameraDistance = 70;
     setCamera() {
         let test = new UniversalCamera('camera', Vector3.Zero(), this.scene);
-        this.camera = new ArcRotateCamera('camera', 0, Math.PI/3, 100, Vector3.Zero(), this.scene);
+        this.camera = new ArcRotateCamera('camera', 0, Math.PI/3, this.cameraDistance, Vector3.Zero(), this.scene);
         this.scene.activeCamera = this.camera;
         this.camera.minZ = 0;
         this.camera.setTarget(Vector3.Zero());

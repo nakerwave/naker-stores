@@ -41,7 +41,7 @@ export let storeCategories: Array < StoreInterface > = [
         color: new Color3(1, 0, 0),
         model: 'panier2.gltf',
         scale: 0.8,
-        ingredientList: 'Ferme_Epicerie_fleuriste',
+        ingredientList: 'Ferme_Epicerie_Fleuriste',
         legendImage: 'grocery.JPG',
     },
     {
@@ -81,7 +81,7 @@ export let storeCategories: Array < StoreInterface > = [
         color: new Color3(0.5, 0.3, 0),
         model: 'Pain4.gltf',
         scale: 0.4,
-        ingredientList: 'Boulangerie_Patisserie_chocolatier',
+        ingredientList: 'Boulangerie_Patisserie_Chocolatier',
         legendImage: 'bakery.JPG',
     },
     {
