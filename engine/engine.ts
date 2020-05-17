@@ -15,7 +15,7 @@ import { LegendUI } from './Ui/legend';
 
 // Au départ on ne comprend pas le but: ajouter une phrase d'accroche
 // Si possible horaire d'ouverture et numéro de téléphone
-// Filtrer au hover de la légende les magasins ou effet de surbrillance ou faire tourner
+// Responsive pas encore ouf, drag and drop pas bon et page résultat non plus
 // Ajouter site de Pierre
 
 export interface GameInterface {
@@ -55,7 +55,7 @@ export class GameEngine {
             this.storeMap.updateStores(latlng);
             this.legendUI.show();
         };
-        
+
         this.tileMap = new TileMap();
         this.ground = new Ground(this.system, this.tileMap, this.mouseCatcher);
         this.storeMap = new StoreMap(this.system, this.tileMap, this.ground, this.car, this.modal);
@@ -65,12 +65,12 @@ export class GameEngine {
         
         this.legendUI = new LegendUI(this.system, this.storeMap);
         
-        setTimeout(() => {
-            this.storeMap.updateStores([-1.414176, 48.680365]);
-            this.modal.setStart([-1.414176, 48.680365]);
-            setStyle(this.searchInput.form, { top: '-30px' });
-            this.legendUI.show();
-        }, 5000);
+        // setTimeout(() => {
+        //     this.storeMap.updateStores([-1.414176, 48.680365]);
+        //     this.modal.setStart([-1.414176, 48.680365]);
+        //     setStyle(this.searchInput.form, { top: '-30px' });
+        //     this.legendUI.show();
+        // }, 5000);
         
         // this.system.camera.attachControl(gameOptions.canvas);
  
