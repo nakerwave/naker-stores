@@ -136,9 +136,10 @@ export class Ground {
     }
 
     stopDrag() {
-        // setTimeout(() => {
+        // Time out to make sure we avoid conflict bewteen down and up
+        setTimeout(() => {
             this.drag = false;
-        // }, 200);
+        }, 100);
     }
 
     ground: Mesh;

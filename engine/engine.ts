@@ -15,7 +15,6 @@ import { LegendUI } from './Ui/legend';
 
 // Au départ on ne comprend pas le but: ajouter une phrase d'accroche
 // Si possible horaire d'ouverture et numéro de téléphone
-// Eventuellement faire show/hide de la légende
 // Filtrer au hover de la légende les magasins ou effet de surbrillance ou faire tourner
 // Ajouter site de Pierre
 
@@ -47,24 +46,25 @@ export class GameEngine {
         this.mouseCatcher.start();
         this.pipeline = new Pipeline(this.system);
 
-        // Value for orthographic camera
-        // this.pipeline.setFocalDistance(-1);
+        this.house = new House(this.system);
+        this.car = new Car(this.system);
         
         this.modal = new ModalUI();
-        this.legendUI = new LegendUI(this.system);
         this.searchInput = new SearchUI(this.modal);
         this.searchInput.onResult = (latlng: Array<number>) => {
             this.storeMap.updateStores(latlng);
             this.legendUI.show();
         };
         
-        this.house = new House(this.system);
-        this.car = new Car(this.system);
-
         this.tileMap = new TileMap();
         this.ground = new Ground(this.system, this.tileMap, this.mouseCatcher);
         this.storeMap = new StoreMap(this.system, this.tileMap, this.ground, this.car, this.modal);
 
+        // Value for orthographic camera
+        // this.pipeline.setFocalDistance(-1);
+        
+        this.legendUI = new LegendUI(this.system, this.storeMap);
+        
         setTimeout(() => {
             this.storeMap.updateStores([-1.414176, 48.680365]);
             this.modal.setStart([-1.414176, 48.680365]);

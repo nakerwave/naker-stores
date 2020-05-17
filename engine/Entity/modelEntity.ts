@@ -22,6 +22,7 @@ export class ModelEntity extends MeshEntity {
         for (let i = 0; i < meshes.length; i++) {
             const mesh: Mesh = meshes[i];
             mesh.isVisible = true;
+            mesh.isPickable = false;
             // mesh.receiveShadow = true;
             mesh.alwaysSelectAsActiveMesh = true;
             mesh.doNotSyncBoundingInfo = true;
@@ -34,6 +35,7 @@ export class ModelEntity extends MeshEntity {
             const mesh: Mesh = meshes[i];
             mesh.parent = this.mesh;
             mesh.isVisible = true;
+            mesh.isPickable = false;
             mesh.scaling.z = -mesh.scaling.z;
             // mesh.receiveShadow = true;
             mesh.alwaysSelectAsActiveMesh = true;

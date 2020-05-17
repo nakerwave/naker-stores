@@ -93,7 +93,7 @@ export class Pipeline {
         this.defaultPipeline.fxaaEnabled = true;
 
         // this.defaultPipeline.depthOfFieldBlurLevel = DepthOfFieldEffectBlurLevel.Medium;
-        this.defaultPipeline.depthOfField.fStop = 3;
+        this.defaultPipeline.depthOfField.fStop = 5;
         this.defaultPipeline.depthOfField.focalLength = 500;
 
         this.defaultPipeline.bloomKernel = 20;

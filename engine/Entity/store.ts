@@ -19,6 +19,7 @@ import pancarteUrl from '../../asset/pancarte4.png';
 
 export interface StoreInterface {
     type: string;
+    match: string;
     color: Color3;
     model: string;
     scale: number;
@@ -37,7 +38,8 @@ export interface StoreData {
 
 export let storeCategories: Array < StoreInterface > = [
     {
-        type: 'garden_center farm florist',
+        type: 'farm',
+        match: 'garden_center farm florist',
         color: new Color3(1, 0, 0),
         model: 'panier2.gltf',
         scale: 0.8,
@@ -46,6 +48,7 @@ export let storeCategories: Array < StoreInterface > = [
     },
     {
         type: 'cheese',
+        match: 'cheese',
         color: new Color3(1, 1, 0),
         model: 'Lait.glb',
         scale: 0.6,
@@ -54,6 +57,7 @@ export let storeCategories: Array < StoreInterface > = [
     },
     {
         type: 'seafood',
+        match: 'seafood',
         color: new Color3(0, 0, 1),
         model: 'Poisson2.glb',
         scale: 0.2,
@@ -61,7 +65,8 @@ export let storeCategories: Array < StoreInterface > = [
         legendImage: 'fish.JPG',
     },
     {
-        type: 'greengrocer beverages',
+        type: 'greengrocer',
+        match: 'greengrocer beverages',
         color: new Color3(0, 0.7, 0),
         model: 'Legumes_bqt.gltf',
         scale: 1.3,
@@ -69,7 +74,8 @@ export let storeCategories: Array < StoreInterface > = [
         legendImage: 'vegetables.JPG',
     },
     {
-        type: 'wine alcohol biergarten',
+        type: 'alcohol',
+        match: 'wine alcohol biergarten',
         color: new Color3(0.5, 0, 0),
         model: 'Vin.glb',
         scale: 0.6,
@@ -77,7 +83,8 @@ export let storeCategories: Array < StoreInterface > = [
         legendImage: 'alcohol.JPG',
     },
     {
-        type: 'pastry bakery chocolate',
+        type: 'bakery',
+        match: 'pastry bakery chocolate',
         color: new Color3(0.5, 0.3, 0),
         model: 'Pain4.gltf',
         scale: 0.4,
@@ -86,6 +93,7 @@ export let storeCategories: Array < StoreInterface > = [
     },
     {
         type: 'butcher',
+        match: 'butcher',
         color: new Color3(1, 0.9, 0.9),
         model: 'Viande.glb',
         scale: 0.7,
@@ -206,8 +214,10 @@ export class Store extends ModelEntity {
         this.setStoreModelRotation(0);
     }
 
-    currentRotation: number;
+    currentRotation: number = 0;
+    rotating = false;
     launchRotateAnimation() {
+        this.rotating = true;
         this.animation.infinite((perc, count) => {
             this.currentRotation = count / 20 % (Math.PI * 2);
             this.setStoreModelRotation(this.currentRotation);
@@ -215,6 +225,8 @@ export class Store extends ModelEntity {
     }
 
     stopRotateAnimation() {
+        if (!this.rotating) return;
+        this.rotating = false;
         this.animation.simple(50, (perc) => {
             let easePerc = this.showCurve.ease(1 - perc);
             let rotation = easePerc * this.currentRotation;
@@ -225,6 +237,9 @@ export class Store extends ModelEntity {
     setStoreModelRotation(rotation: number) {
         this.storeParent.rotation.y = rotation;
         this.storeParent.rotationQuaternion = Quaternion.RotationYawPitchRoll(rotation, 0, 0);
+        // this.storeParent.scaling.x = rotation;
+        // this.storeParent.scaling.y = rotation;
+        // this.storeParent.scaling.z = rotation;
     }
 
     hideAnim(callback?: Function) {

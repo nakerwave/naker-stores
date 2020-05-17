@@ -9,6 +9,7 @@ import { Vector2 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 import find from 'lodash/find';
+import filter from 'lodash/filter';
 
 import stores from '../../asset/stores2.json';
 
@@ -151,8 +152,8 @@ export class StoreMap {
         return storesLimit;
     }
 
-    getStoreType(type: string) {
-        return find(storeCategories, (s) => { return s.type.indexOf(type) != -1 });
+    getStoreType(category: string) {
+        return find(storeCategories, (s) => { return s.match.indexOf(category) != -1 });
     }
 
     getBase(type: string): Array<Mesh> {
@@ -210,5 +211,18 @@ export class StoreMap {
             this.system.checkActiveMeshes();
             this.system.updateShadows();
         }, 100);
+    }
+
+    animateTypeModel(type: string) {
+        let typedStores = filter(this.storesList, (s) => { return s.type == type });
+        for (let i = 0; i < typedStores.length; i++) {
+            typedStores[i].launchRotateAnimation();
+        }
+    }
+
+    stopAllModelAnimation() {
+        for (let i = 0; i < this.storesList.length; i++) {
+            this.storesList[i].stopRotateAnimation();
+        }
     }
 }
