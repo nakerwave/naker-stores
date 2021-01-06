@@ -22,7 +22,7 @@
         "@babylonjs/loaders": "^4.1.0",
         "@babylonjs/materials": "^4.1.0",
         "@naker/services": "file:../naker-services",
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "hotkeys-js": "^3.3.8",
         "mapbox-gl": "^1.9.1",
         "suggestions": "^1.7.0"
